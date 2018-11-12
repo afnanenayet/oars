@@ -1,0 +1,6 @@
+[package]
+name = "oars"
+version = "0.1.0"
+authors = ["Afnan Enayet <afnan@afnan.io>"]
+
+[dependencies]
