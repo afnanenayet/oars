@@ -12,6 +12,14 @@ there are many resources online that provide the numbers for you to use.
 
 ## Development
 
+This project only relies on the [ndarray](https://github.com/rust-ndarray/ndarray)
+crate. There are several optimizations that can be applied to the crate for
+compilation, such as `BLAS` acceleration.
+
+This package targets Rust 2018, and so will only compile with the `beta` and
+`nightly` compilers. To compile, use `cargo +beta build` or
+`cargo +nightly build`.
+
 ### Usage
 
 You can use this library with your Rust project via cargo. It targets the
@@ -23,3 +31,9 @@ Mac and Linux machines.
 
 Of course, if you find any issues, please feel free to file an issue or
 send a PR. Feature requests are also welcome.
+
+## Roadmap
+
+- [ ] implement Bose constructor
+- [ ] implement Bush constructor
+- [ ] provide parallelized constructors and method variants
