@@ -1,7 +1,9 @@
 //! The generic interface to define an orthogonal array and generic construction methods. This
 //! module also defines a few construction methods.
 
+use crate::perm_vec::PermutationVector;
 use ndarray::Array2;
+use rand::prelude::*;
 use std::fmt;
 
 /// The definition of an orthogonal array with its point set and parameters.
@@ -46,11 +48,11 @@ impl fmt::Display for OA {
 /// and Bush construction._
 ///
 /// Args:
-///     - jitter: the factor between 0 and 1 to jitter by
-///     - randomize: whether the orthogonal array should be randomly shuffled when generating points
+///     - jitter: The factor between 0 and 1 to jitter by.
+///     - randomize: Whether the orthogonal array should be randomly shuffled when generating points.
 pub fn normalize(oa: &OA, jitter: f32, randomize: bool) -> Array2<f32> {
     if oa.points.ndim() != 2 {
-        panic!("Orthogonal array must be in 2D matrix form");
+        panic!("Orthogonal array must be in a 2D matrix form");
     }
 
     if jitter < 0.0 || jitter > 1.0 {
@@ -59,17 +61,35 @@ pub fn normalize(oa: &OA, jitter: f32, randomize: bool) -> Array2<f32> {
 
     let dims = oa.points.shape();
     let mut point_set = Array2::<f32>::zeros((dims[0], dims[1]));
-    let mut row_counter = 0;
+    let mut perms: Vec<PermutationVector> = Vec::new();
+    let mut rng = rand::thread_rng();
+
+    // Create the permutation vectors. If "randomize" is requested, apply the
+    // shuffle. Otherwise, it will be an identity vector, and applying it will
+    // not result in any randomization.
+    for i in 0..dims[1] {
+        perms[i] = PermutationVector::new(dims[0]);
+
+        if randomize {
+            perms[i].shuffle();
+        }
+    }
 
     // loop through each point in the OA and convert to a point in the pointset
-    // TODO: parallelize/optimize this
-    // Note: `genrows()` does not seem to implement `enumerate()` so we need the explicit loop
-    // counter. TODO see if there's a way to resolve this and use the enumerator
-    for row in oa.points.genrows() {
+    // note: `genrows()` does not seem to implement `enumerate()` so we need the explicit loop
+    // counter.
+    //for row in oa.points.genrows() {
+    for i in 0..dims[0] {
         for j in 0..dims[1] {
-            point_set[[row_counter, j]] = row[j] as f32 / oa.strength as f32;
+            // Apply the shuffle with the permutation vector to get the new index for the
+            // point
+            let shuffled_i = perms[j][i];
+
+            // Apply jitter factor (random number between 0 and jitter as an upper bound)
+            // If jitter is 0, then the points will be centered in the strata.
+            let jittered_point: f32 = (oa.points[[i, j]] as f32) + (jitter * rng.gen::<f32>());
+            point_set[[shuffled_i, j]] = jittered_point / oa.strength as f32;
         }
-        row_counter += 1;
     }
     point_set
 }
