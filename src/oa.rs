@@ -2,8 +2,10 @@
 //! module also defines a few construction methods.
 
 use ndarray::Array2;
+use std::fmt;
 
 /// The definition of an orthogonal array with its point set and parameters.
+#[derive(Debug)]
 pub struct OA {
     /// The size of the set $X$ that the array can select elements from.
     pub levels: u32,
@@ -25,9 +27,20 @@ pub struct OA {
     pub points: Array2<u32>,
 }
 
+/// Print the metadata of the orthogonal array, then print the contents of the array.
+impl fmt::Display for OA {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "OA:\n\tlevels: {}\n\tstrength: {}\n\tfactors: {}\n\tindex: {}\npoints:\n{}\n",
+            self.levels, self.strength, self.factors, self.index, self.points
+        )
+    }
+}
+
 /// Normalize an orthogonal array into a point set using Art Owen's normalization technique.
 /// This method takes a regular orthogonal array, and converts it into a point set in the $[0, 1)^m$
-/// domain, so that it can be used as a point set for Monte Carlo integration.
+/// domain, so that it can be used as a sampling point set for Monte Carlo integration.
 ///
 /// _Note: it is unknown whether this method will work with construction techniques other than Bose
 /// and Bush construction._
