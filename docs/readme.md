@@ -16,9 +16,15 @@ This project only relies on the [ndarray](https://github.com/rust-ndarray/ndarra
 crate. There are several optimizations that can be applied to the crate for
 compilation, such as `BLAS` acceleration.
 
-This package targets Rust 2018, and so will only compile with the `beta` and
-`nightly` compilers. To compile, use `cargo +beta build` or
-`cargo +nightly build`.
+This crate was made for the stable compiler, so building is as simple as
+
+```sh
+cargo build 
+# or
+cargo build --release
+```
+
+This will also be available in crates.io
 
 ### Usage
 
@@ -34,6 +40,6 @@ send a PR. Feature requests are also welcome.
 
 ## Roadmap
 
-- [ ] implement Bose constructor
+- [x] implement Bose constructor
 - [ ] implement Bush constructor
 - [ ] provide parallelized constructors and method variants
