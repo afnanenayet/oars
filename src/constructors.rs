@@ -42,10 +42,10 @@ impl Bush {
 /// be. It must be between 2 and $p + 1$, inclusive.
 pub struct Bose {
     /// The strength of the orthogonal array. It *must* be a prime number.
-    prime_base: u32,
+    pub prime_base: u32,
 
     /// The dimensionality of the resulting point set
-    dimensions: u32,
+    pub dimensions: u32,
 }
 
 impl Bose {
@@ -75,12 +75,12 @@ impl OAConstructor for Bose {
 
         // Initialize dims 1 and 2 with the special construction technique
         for i in 0..n {
-            points[[i as usize, 1]] = i / n;
-            points[[i as usize, 2]] = i % n;
+            points[[i as usize, 0]] = i / self.prime_base;
+            points[[i as usize, 1]] = i % self.prime_base;
         }
 
         for i in 0..n {
-            for j in 3..self.dimensions {
+            for j in 2..self.dimensions {
                 points[[i as usize, j as usize]] =
                     points[[i as usize, 1]] + (j - 2) * points[[i as usize, 2]];
             }
