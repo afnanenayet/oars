@@ -4,6 +4,7 @@
 use crate::perm_vec::PermutationVector;
 use ndarray::Array2;
 use rand::prelude::*;
+use std::error::Error;
 use std::fmt;
 
 /// The definition of an orthogonal array with its point set and parameters.
@@ -37,6 +38,37 @@ impl fmt::Display for OA {
             "OA:\n\tlevels: {}\n\tstrength: {}\n\tfactors: {}\n\tindex: {}\npoints:\n{}\n",
             self.levels, self.strength, self.factors, self.index, self.points
         )
+    }
+}
+
+/// An error indicating that there was some error constructing the orthogonal array.
+#[derive(Debug)]
+pub struct OAConstructionError {
+    /// A user-friendly description of the array
+    desc: String,
+}
+
+/// A result type for orthogonal array construction
+pub type OAResult = Result<OA, OAConstructionError>;
+
+impl Error for OAConstructionError {
+    fn description(&self) -> &str {
+        &self.desc
+    }
+}
+
+impl fmt::Display for OAConstructionError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "OA Construction Error: {}", &self.desc)
+    }
+}
+
+impl OAConstructionError {
+    pub fn new<T>(msg: T) -> OAConstructionError
+    where
+        T: Into<String>,
+    {
+        OAConstructionError { desc: msg.into() }
     }
 }
 
@@ -98,5 +130,5 @@ pub fn normalize(oa: &OA, jitter: f32, randomize: bool) -> Array2<f32> {
 pub trait OAConstructor {
     /// The method that generates an orthogonal array. Any necessary parameters must be handled
     /// by the constructor itself.
-    fn gen(&self) -> OA;
+    fn gen(&self) -> OAResult;
 }
