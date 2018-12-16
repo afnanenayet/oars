@@ -126,6 +126,16 @@ pub fn normalize(oa: &OA, jitter: f32, randomize: bool) -> Array2<f32> {
     point_set
 }
 
+// TODO create a method to verify whether an array is a valid array
+/// Given some orthogonal array struct, verify that the points are a valid orthogonal array as
+/// described by the parameters.
+///
+/// An orthogonal array is defined by four key parameters, and this function attempts to see
+/// if `points` matches up with the other parameters.
+pub fn verify_oa(oa: &OA) -> bool {
+    false // TODO remove
+}
+
 /// A generic trait to demarcate orthogonal array constructors
 pub trait OAConstructor {
     /// The method that generates an orthogonal array. Any necessary parameters must be handled
