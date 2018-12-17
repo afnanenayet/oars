@@ -19,7 +19,7 @@ pub fn to_base(num: u32, base: u32) -> Vec<u32> {
 
     while num > 0 {
         new_base.push(num % base);
-        num = num / base;
+        num /= base;
     }
     new_base
 }

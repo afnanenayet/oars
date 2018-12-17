@@ -2,8 +2,11 @@
 //! module also defines a few construction methods.
 
 use crate::perm_vec::PermutationVector;
+use crate::utils::to_base;
+use itertools::Itertools;
 use ndarray::Array2;
 use rand::prelude::*;
+use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
 
@@ -131,9 +134,47 @@ pub fn normalize(oa: &OA, jitter: f32, randomize: bool) -> Array2<f32> {
 /// described by the parameters.
 ///
 /// An orthogonal array is defined by four key parameters, and this function attempts to see
-/// if `points` matches up with the other parameters.
+/// if `points` matches up with the other parameters. This means that for any (and every)
+/// selection of $t$ columns, every possible combination of $t$-tuples must be present in that
+/// submatrix. You can easily map the combinations in a unique way using base $s$ where $s$ is
+/// the number of factors in the array (assuming it is a symmetrical array).
 pub fn verify_oa(oa: &OA) -> bool {
-    false // TODO remove
+    if oa.points.ndim() != 2 {
+        return false;
+    }
+
+    if oa.points.shape()[1] != oa.factors as usize {
+        return false;
+    }
+
+    let col_combos = (0..oa.levels).combinations(oa.levels as usize);
+
+    // this iterator gives us every possible combination of columns
+    for selection in col_combos {
+        // tuple count holds the count for how many times each possible tuple is seen
+        let mut tuple_count: HashMap<u32, u32> = HashMap::new();
+
+        // loop through the points and count up how many times we encounter the combo
+        for i in 0..oa.points.shape()[0] {
+            let mut tuple_index = 0;
+
+            for (pow, column) in selection.iter().enumerate() {
+                tuple_index += oa.points[[i as usize, *column as usize]].pow(pow as u32);
+
+                // set count to 1 if it doesn't exist, otherwise update the count
+                *tuple_count.entry(tuple_index).or_insert(1) += 1;
+            }
+        }
+
+        // now verify that the hashmap has every possible combination, `index` times
+        for i in 0..oa.levels.pow(oa.strength) {
+            // if the entry is not present in the array, set the count to 0
+            if *tuple_count.entry(i).or_insert(0) != oa.index {
+                return false;
+            }
+        }
+    }
+    true
 }
 
 /// A generic trait to demarcate orthogonal array constructors
