@@ -22,6 +22,8 @@ pub struct Bush {
 impl Bush {
     /// Verify the parameters for Bush construction. This checks to see whether the prime base
     /// is valid and returns whether the parameters are correct.
+    ///
+    /// For the Bush construction, the strength, $s$, must be between 2 and $p + 1$.
     fn verify_params(&self) -> bool {
         true
     }
