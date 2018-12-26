@@ -12,6 +12,10 @@
 //! orthogonal array parameters, and convert points from an orthogonal array to a point set
 //! and back.
 //!
+//! Many of the techniques used in this library were either taken from or inspired by Art Owen's
+//! currently unpublished book about Monte Carlo integration. This library was also developed by a
+//! member of Dartmouth's Visual Computing Lab under the tutelage of Dr. Wojciech Jarosz.
+//!
 //! # Example Usage
 //!
 //! ```
