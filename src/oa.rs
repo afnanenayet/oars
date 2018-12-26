@@ -2,7 +2,6 @@
 //! module also defines a few construction methods.
 
 use crate::perm_vec::PermutationVector;
-use crate::utils::to_base;
 use itertools::Itertools;
 use ndarray::Array2;
 use rand::prelude::*;
@@ -38,16 +37,31 @@ impl fmt::Display for OA {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "OA:\n\tlevels: {}\n\tstrength: {}\n\tfactors: {}\n\tindex: {}\npoints:\n{}\n",
+            "OA:\n\tlevels: {}\n\tstrength: {}\n\tfactors: {}\n\tindex: {}\npoints:\n\n{}\n\n",
             self.levels, self.strength, self.factors, self.index, self.points
         )
     }
 }
 
+/// The general categories of errors for `OAConstructionError`
+#[derive(Debug)]
+pub enum OACErrorKind {
+    /// Invalid parameters were supplied to the constructor
+    InvalidParams,
+
+    /// There was a runtime error that prevented the orthogonal array from being properly
+    /// constructed
+    RuntimeError,
+}
+
 /// An error indicating that there was some error constructing the orthogonal array.
 #[derive(Debug)]
 pub struct OAConstructionError {
-    /// A user-friendly description of the array
+    /// The general category of the error
+    error_type: OACErrorKind,
+
+    /// A user-friendly description of the array which can supply additional information about
+    /// the error.
     desc: String,
 }
 
@@ -67,11 +81,14 @@ impl fmt::Display for OAConstructionError {
 }
 
 impl OAConstructionError {
-    pub fn new<T>(msg: T) -> OAConstructionError
+    pub fn new<T>(kind: OACErrorKind, msg: T) -> OAConstructionError
     where
         T: Into<String>,
     {
-        OAConstructionError { desc: msg.into() }
+        OAConstructionError {
+            error_type: kind,
+            desc: msg.into(),
+        }
     }
 }
 
@@ -96,6 +113,7 @@ pub fn normalize(oa: &OA, jitter: f32, randomize: bool) -> Array2<f32> {
 
     let dims = oa.points.shape();
     let mut point_set = Array2::<f32>::zeros((dims[0], dims[1]));
+
     let mut perms: Vec<PermutationVector> = Vec::new();
     let mut rng = rand::thread_rng();
 
@@ -103,7 +121,7 @@ pub fn normalize(oa: &OA, jitter: f32, randomize: bool) -> Array2<f32> {
     // shuffle. Otherwise, it will be an identity vector, and applying it will
     // not result in any randomization.
     for i in 0..dims[1] {
-        perms[i] = PermutationVector::new(dims[0]);
+        perms.push(PermutationVector::new(dims[0]));
 
         if randomize {
             perms[i].shuffle();
@@ -129,7 +147,6 @@ pub fn normalize(oa: &OA, jitter: f32, randomize: bool) -> Array2<f32> {
     point_set
 }
 
-// TODO create a method to verify whether an array is a valid array
 /// Given some orthogonal array struct, verify that the points are a valid orthogonal array as
 /// described by the parameters.
 ///
