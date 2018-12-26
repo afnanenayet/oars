@@ -1,8 +1,7 @@
 /// Misc utilities and convenience functions for the crate
 use std::vec::Vec;
 
-/// Given some number in base 10, convert it to a set of digits that show the
-/// number's representation in the provided base.
+/// Convert a number to an arbitrary base representation
 ///
 /// This function returns a vector with the digits of the number. For example,
 /// given the number 5 and base 2, the resulting vector will look like:
@@ -22,6 +21,37 @@ pub fn to_base(num: u32, base: u32) -> Vec<u32> {
         num /= base;
     }
     new_base
+}
+
+/// Convert a number to an arbitrary base with a fixed number of digits
+///
+/// Given some number, convert the number to some base with a specified number of digits. This
+/// means that numbers can be truncated if `degree` is too small. This also means that numbers may
+/// be zero-padded.
+pub fn to_base_fixed(num: u32, base: u32, degree: u32) -> Vec<u32> {
+    // The number in a the new base
+    let mut new_base = vec![0; degree as usize];
+    let mut new_num = num;
+
+    for i in 0..(degree + 1) {
+        let i = i as usize;
+        new_base[i] = new_num % base;
+        new_num /= base;
+    }
+    new_base
+}
+
+/// Evaluate a polynomial at `position` using the given coefficient vector
+///
+/// Using a coefficient vector, where the index of the vector signifies the location, evaluate
+/// the given polynomial. This method uses Horner's rule to evaluate the polynomial efficiently.
+pub fn poly_eval(coeffs: &Vec<u32>, position: u32) -> u32 {
+    let mut result = 0;
+
+    for i in (0..coeffs.len()).rev() {
+        result = (result * position) + coeffs[i as usize];
+    }
+    result
 }
 
 #[cfg(test)]

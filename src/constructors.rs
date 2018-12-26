@@ -7,35 +7,51 @@
 //! The description of the construction method will be with the struct that contains
 //! the parameters.
 
-use crate::oa::{OAConstructionError, OAConstructor, OAResult, OA};
+use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, OA};
 use ndarray::Array2;
 use primes::is_prime;
 
+/// Generate an orthogonal array with any prime base and a strength between 2 and p + 1
+///
 /// The Bush construction technique, as described by Art Owen in his currently unpublished Monte
-/// Carlo textbook. In Chapter 10.4, he describes the Bush construction technique. It's only
-/// parameter is the prime number base.
+/// Carlo textbook. In Chapter 10.4, he describes the Bush construction technique.
 pub struct Bush {
     /// The strength of the orthogonal array. It *must* be a prime number.
-    prime_base: u32,
+    pub prime_base: u32,
+
+    /// The desired strength of the orthogonal array. It must be greater than or equal to 2.
+    /// It must also be
+    pub strength: u32,
+
+    /// The dimensionality of the orthogonal array
+    pub dimensions: u32,
 }
 
 impl Bush {
     /// Verify the parameters for Bush construction. This checks to see whether the prime base
     /// is valid and returns whether the parameters are correct.
     ///
-    /// For the Bush construction, the strength, $s$, must be between 2 and $p + 1$.
+    /// For the Bush construction, the strength, `s`, must be between 2 and `p + 1`.
+    /// The resulting OA will have `p` levels, a strength of `t`, and `p^t` samples.
     fn verify_params(&self) -> bool {
+        if !is_prime(u64::from(self.prime_base)) {
+            return false;
+        }
+
+        // TODO check the bounds for dimensionality and strength and update the docs accordingly
         true
     }
 }
 
 //impl OAConstructor for Bush {
 //fn gen(&self) -> OA {
-// TODO
+// TODO implement this!
 //}
 //}
 
-/// The Bose consstruction technique, as described by Art Owen.
+/// Generate an orthogonal array with any prime base and a strength of 2
+///
+/// This technique was described by Art Owen in his Monte Carlo book in Chapter 10.4.
 ///
 /// `prime_base` corresponds to $p$ in the literature. The number of total
 /// points, or $n$ is $p^2$.
@@ -46,14 +62,13 @@ pub struct Bose {
     /// The strength of the orthogonal array. It *must* be a prime number.
     pub prime_base: u32,
 
-    /// The dimensionality of the resulting point set
+    /// The dimensionality of the orthogonal array
     pub dimensions: u32,
 }
 
 impl Bose {
     /// Verify the parameters for Bose construction and return whether they
-    /// are valid. If they are not valid, then it will not be possible to
-    /// apply the Bose construction technique.
+    /// are valid.     
     fn verify_params(&self) -> bool {
         if self.dimensions < 2 || self.dimensions > self.prime_base + 1 {
             return false;
@@ -69,7 +84,10 @@ impl Bose {
 impl OAConstructor for Bose {
     fn gen(&self) -> OAResult {
         if !self.verify_params() {
-            return Err(OAConstructionError::new("invalid parameters"));
+            return Err(OAConstructionError::new(
+                OACErrorKind::InvalidParams,
+                "invalid parameters",
+            ));
         }
 
         let n = self.prime_base * self.prime_base;
