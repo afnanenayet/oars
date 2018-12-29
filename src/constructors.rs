@@ -38,7 +38,9 @@ impl Bush {
             return false;
         }
 
-        // TODO check the bounds for dimensionality and strength and update the docs accordingly
+        if self.dimensions < 2 || self.dimensions > self.prime_base + 1 {
+            return false;
+        }
         true
     }
 }
@@ -68,7 +70,7 @@ pub struct Bose {
 
 impl Bose {
     /// Verify the parameters for Bose construction and return whether they
-    /// are valid.     
+    /// are valid.
     fn verify_params(&self) -> bool {
         if self.dimensions < 2 || self.dimensions > self.prime_base + 1 {
             return false;
