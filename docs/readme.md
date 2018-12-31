@@ -19,12 +19,12 @@ compilation, such as `BLAS` acceleration.
 This crate was made for the stable compiler, so building is as simple as
 
 ```sh
-cargo build 
+cargo build
 # or
 cargo build --release
 ```
 
-This will also be available in crates.io
+This will also be available in https://crates.io
 
 ### Usage
 
