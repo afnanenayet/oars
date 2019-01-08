@@ -33,7 +33,7 @@ pub fn to_base_fixed(num: u32, base: u32, degree: u32) -> Vec<u32> {
     let mut new_base = vec![0; degree as usize];
     let mut new_num = num;
 
-    for i in 0..(degree + 1) {
+    for i in 0..=degree {
         let i = i as usize;
         new_base[i] = new_num % base;
         new_num /= base;
@@ -45,7 +45,7 @@ pub fn to_base_fixed(num: u32, base: u32, degree: u32) -> Vec<u32> {
 ///
 /// Using a coefficient vector, where the index of the vector signifies the location, evaluate
 /// the given polynomial. This method uses Horner's rule to evaluate the polynomial efficiently.
-pub fn poly_eval(coeffs: &Vec<u32>, position: u32) -> u32 {
+pub fn poly_eval(coeffs: &[u32], position: u32) -> u32 {
     let mut result = 0;
 
     for i in (0..coeffs.len()).rev() {
