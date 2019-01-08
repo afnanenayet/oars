@@ -8,8 +8,10 @@
 //! the parameters.
 
 use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, OA};
+use crate::utils::{poly_eval, to_base_fixed};
 use ndarray::Array2;
 use primes::is_prime;
+use std::cmp::min;
 
 /// Generate an orthogonal array with any prime base and a strength between 2 and p + 1
 ///
@@ -41,15 +43,47 @@ impl Bush {
         if self.dimensions < 2 || self.dimensions > self.prime_base + 1 {
             return false;
         }
+
+        if self.strength < 1 || self.strength > self.prime_base {
+            return false;
+        }
         true
     }
 }
 
-//impl OAConstructor for Bush {
-//fn gen(&self) -> OA {
-// TODO implement this!
-//}
-//}
+impl OAConstructor for Bush {
+    fn gen(&self) -> OAResult {
+        if !self.verify_params() {
+            return Err(OAConstructionError::new(
+                OACErrorKind::InvalidParams,
+                "Invalid parameters",
+            ));
+        }
+        let n = self.prime_base.pow(self.strength);
+        let mut points = Array2::<u32>::zeros((n as usize, self.dimensions as usize));
+
+        for i in 0..n {
+            let coeffs = to_base_fixed(i, self.prime_base, self.strength);
+            let poly_dims = min(self.dimensions, self.prime_base);
+
+            for j in 0..poly_dims {
+                points[[i as usize, j as usize]] = poly_eval(&coeffs, j) % self.prime_base;
+            }
+
+            if self.dimensions == self.prime_base + 1 {
+                points[[i as usize, self.prime_base as usize]] = (i - 1) % self.prime_base;
+            }
+        }
+
+        Ok(OA {
+            strength: self.strength,
+            levels: self.prime_base.pow(self.strength),
+            index: 1,
+            factors: self.dimensions,
+            points,
+        })
+    }
+}
 
 /// Generate an orthogonal array with any prime base and a strength of 2
 ///
@@ -92,7 +126,7 @@ impl OAConstructor for Bose {
             ));
         }
 
-        let n = self.prime_base * self.prime_base;
+        let n = self.prime_base.pow(2);
         let mut points = Array2::<u32>::zeros((n as usize, self.dimensions as usize));
 
         // Initialize dims 1 and 2 with the special construction technique
