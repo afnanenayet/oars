@@ -165,23 +165,23 @@ pub fn verify_oa(oa: &OA) -> bool {
         return false;
     }
 
-    let col_combos = (0..oa.levels).combinations(oa.levels as usize);
+    let col_combos = (0..oa.factors).combinations(oa.strength as usize);
 
     // this iterator gives us every possible combination of columns
     for selection in col_combos {
         // tuple count holds the count for how many times each possible tuple is seen
         let mut tuple_count: HashMap<u32, u32> = HashMap::new();
 
-        // loop through the points and count up how many times we encounter the combo
+        // loop through the points and count up how many times we encounter the tuple
         for i in 0..oa.points.shape()[0] {
             let mut tuple_index = 0;
 
             for (pow, column) in selection.iter().enumerate() {
-                tuple_index += oa.points[[i as usize, *column as usize]].pow(pow as u32);
-
-                // set count to 1 if it doesn't exist, otherwise update the count
-                *tuple_count.entry(tuple_index).or_insert(1) += 1;
+                tuple_index +=
+                    oa.points[[i as usize, *column as usize]] * oa.levels.pow(pow as u32);
             }
+            // set count to 1 if it doesn't exist, otherwise update the count
+            *tuple_count.entry(tuple_index).or_insert(0) += 1;
         }
 
         // now verify that the hashmap has every possible combination, `index` times
