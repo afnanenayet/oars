@@ -5,12 +5,13 @@ use crate::perm_vec::PermutationVector;
 use itertools::Itertools;
 use ndarray::Array2;
 use rand::prelude::*;
+use serde_derive::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
 
 /// The definition of an orthogonal array with its point set and parameters.
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct OA {
     /// The size of the set $X$ that the array can select elements from.
     pub levels: u32,

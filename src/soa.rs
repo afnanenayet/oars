@@ -3,9 +3,10 @@
 //! ensure that the resulting points are stratified as an SOA should be.
 
 use ndarray::Array2;
+use serde_derive::{Deserialize, Serialize};
 
 /// The general categories of errors for `SOAConstructionError`
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum SOACErrorKind {
     /// Invalid parameters were supplied to the constructor
     InvalidParams,
