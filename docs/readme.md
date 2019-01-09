@@ -1,5 +1,8 @@
 # oa-rs
 
+[![Build Status](https://travis-ci.com/afnanenayet/oars.svg?token=QtxzrX3Qc2BDQfwx8D1K&branch=master)](https://travis-ci.com/afnanenayet/oars)
+
+
 ## Summary
 
 oa-rs/oars is a library for constructing orthogonal arrays (OAs) with various
