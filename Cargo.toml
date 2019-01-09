@@ -14,3 +14,7 @@ itertools = "0.8.0"
 [dependencies.ndarray]
 version = "0.12.1"
 features = ["serde-1"]
+
+[profile.release]
+lto = true
+opt-level = 3
