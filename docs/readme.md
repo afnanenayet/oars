@@ -4,7 +4,10 @@
 
 oa-rs/oars is a library for constructing orthogonal arrays (OAs) with various
 parameters, with the ability to construct OAs using multiple construction
-methods.
+methods. It also provides utilities for constructing strong orthogonal arrays
+that work with the facilities for existing OAs or constructing SOAs from scratch.
+
+There are utilities for verifying OAs and SOAs.
 
 These orthogonal arrays are not predefined and are constructed on the fly.
 If you want to create orthogonal arrays using predefined lookup tables,
@@ -35,11 +38,11 @@ be good.
 I test this library on Mac/Linux with Travis, and also on my personal
 Mac and Linux machines.
 
-Of course, if you find any issues, please feel free to file an issue or
-send a PR. Feature requests are also welcome.
+Of course, if you find any issues, please file an issue or send a PR. Feature
+requests are also welcome.
 
 ## Roadmap
 
 - [x] implement Bose constructor
-- [ ] implement Bush constructor
+- [x] implement Bush constructor
 - [ ] provide parallelized constructors and method variants
