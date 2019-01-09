@@ -30,7 +30,7 @@ pub fn to_base(num: u32, base: u32) -> Vec<u32> {
 /// be zero-padded.
 pub fn to_base_fixed(num: u32, base: u32, degree: u32) -> Vec<u32> {
     // The number in a the new base
-    let mut new_base = vec![0; degree as usize];
+    let mut new_base = vec![0; (degree + 1) as usize];
     let mut new_num = num;
 
     for i in 0..=degree {
