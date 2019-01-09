@@ -34,7 +34,6 @@ fn test_bose_normalize() {
         dimensions: 2,
     };
     let oa = bose.gen().unwrap();
-    assert!(verify_oa(&oa));
     normalize(&oa, 0.0, true);
     normalize(&oa, 1.0, true);
 }
