@@ -145,7 +145,7 @@ impl OAConstructor for Bose {
         Ok(OA {
             strength: 2,
             levels: self.prime_base,
-            factors: self.prime_base,
+            factors: self.dimensions,
             index: 1,
             points,
         })
