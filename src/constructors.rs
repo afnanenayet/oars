@@ -77,7 +77,7 @@ impl OAConstructor for Bush {
 
         Ok(OA {
             strength: self.strength,
-            levels: self.prime_base.pow(self.strength),
+            levels: self.prime_base,
             index: 1,
             factors: self.dimensions,
             points,
@@ -145,7 +145,7 @@ impl OAConstructor for Bose {
         Ok(OA {
             strength: 2,
             levels: self.prime_base,
-            factors: self.dimensions,
+            factors: self.prime_base,
             index: 1,
             points,
         })
