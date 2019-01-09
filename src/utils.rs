@@ -1,28 +1,6 @@
 /// Misc utilities and convenience functions for the crate
 use std::vec::Vec;
 
-/// Convert a number to an arbitrary base representation
-///
-/// This function returns a vector with the digits of the number. For example,
-/// given the number 5 and base 2, the resulting vector will look like:
-/// `[1, 0, 1]`.
-///
-/// Note that this method returns a vector that looks "backwards", that is to
-/// say, that the vector is read in the reverse order that you would read a string.
-/// This way, the index of the vector gives you the power of the base, and the element
-/// at some index would be the coefficient to $b^i$. For a human readable format,
-/// reverse the vector.
-pub fn to_base(num: u32, base: u32) -> Vec<u32> {
-    let mut new_base = Vec::new();
-    let mut num = num;
-
-    while num > 0 {
-        new_base.push(num % base);
-        num /= base;
-    }
-    new_base
-}
-
 /// Convert a number to an arbitrary base with a fixed number of digits
 ///
 /// Given some number, convert the number to some base with a specified number of digits. This
@@ -48,6 +26,7 @@ pub fn to_base_fixed(num: u32, base: u32, degree: u32) -> Vec<u32> {
 pub fn poly_eval(coeffs: &[u32], position: u32) -> u32 {
     let mut result = 0;
 
+    // Using Horner's rule
     for i in (0..coeffs.len()).rev() {
         result = (result * position) + coeffs[i as usize];
     }
