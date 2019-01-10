@@ -138,7 +138,7 @@ impl OAConstructor for Bose {
         for i in 0..n {
             for j in 2..self.dimensions {
                 points[[i as usize, j as usize]] =
-                    points[[i as usize, 1]] + (j - 2) * points[[i as usize, 2]];
+                    (points[[i as usize, 0]] + (j - 1) * points[[i as usize, 1]]) % self.prime_base;
             }
         }
 
@@ -210,13 +210,14 @@ mod tests {
             [0, 0, 0],
             [0, 1, 1],
             [0, 2, 2],
-            [1, 0, 0],
-            [1, 1, 1],
-            [1, 2, 2],
-            [2, 0, 0],
-            [2, 1, 1],
-            [2, 2, 2],
+            [1, 0, 1],
+            [1, 1, 2],
+            [1, 2, 0],
+            [2, 0, 2],
+            [2, 1, 0],
+            [2, 2, 1],
         ]);
+        println!("{:?}", oa.points);
         assert!(oa.points == ground_truth);
     }
 }
