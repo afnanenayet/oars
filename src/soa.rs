@@ -41,17 +41,24 @@ pub trait SOAConstructor {
 /// metadata.
 #[derive(Debug)]
 pub struct SOA {
+    /// The strength of the strong orthogonal array
     pub strength: u32,
 
-    /// The number of columns in the strong orthogonal array. This is the dimensionality of the point
-    /// set.
-    pub factors: u32,
+    /// The base `s` used to derive the number of levels and total number of samples
+    pub base: u32,
 
-    /// The number of times each t-tuple is present in the strong orthogonal array. Setting this to 1
-    /// ensures the Latin hypercube guarantee.
-    pub index: u32,
-
-    /// The internal array that holds the data for the strong orthogonal array. This is not the same as
-    /// the point set that can be used for Monte Carlo simulations.
+    /// The internal array that holds the data for the strong orthogonal array
     pub points: Array2<u32>,
+}
+
+/// Verify whether a point set is a valid strong orthogonal array based on the metadata supplied in
+/// that struct. This method returns whether the given SOA is valid, based on the metadata. It will
+/// check that the SOA maintains the stratification guarantees based on the properties of the SOA.
+pub fn verify_soa(soa: &SOA) -> bool {
+    // TODO(afnan)
+    // - Find some way to find every combo of numbers that adds up to `t`
+    // - Write some method that generates the unshuffled stratification guarantees
+    // - Check that each strata are equally filled
+    // - Write unit tests
+    false
 }
