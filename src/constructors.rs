@@ -237,7 +237,6 @@ mod tests {
         };
         assert!(bush.gen().is_err());
 
-
         let bush = Bush {
             strength: 2,
             prime_base: 100,
