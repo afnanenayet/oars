@@ -220,4 +220,29 @@ mod tests {
         println!("{:?}", oa.points);
         assert!(oa.points == ground_truth);
     }
+
+    #[test]
+    fn bush_non_prime() {
+        let bush = Bush {
+            strength: 2,
+            prime_base: 4,
+            dimensions: 3,
+        };
+        assert!(bush.gen().is_err());
+
+        let bush = Bush {
+            strength: 2,
+            prime_base: 9,
+            dimensions: 3,
+        };
+        assert!(bush.gen().is_err());
+
+
+        let bush = Bush {
+            strength: 2,
+            prime_base: 100,
+            dimensions: 3,
+        };
+        assert!(bush.gen().is_err());
+    }
 }
