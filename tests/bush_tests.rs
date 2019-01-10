@@ -20,6 +20,22 @@ fn test_bush_init_verify() {
     };
     let oa = bush.gen().unwrap();
     assert!(verify_oa(&oa));
+
+    let bush = Bush {
+        prime_base: 3,
+        dimensions: 3,
+        strength: 3,
+    };
+    let oa = bush.gen().unwrap();
+    assert!(verify_oa(&oa));
+
+    let bush = Bush {
+        prime_base: 5,
+        dimensions: 4,
+        strength: 4,
+    };
+    let oa = bush.gen().unwrap();
+    assert!(verify_oa(&oa));
 }
 
 #[test]

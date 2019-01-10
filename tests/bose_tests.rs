@@ -1,6 +1,6 @@
 /// Unit tests for the Bose array constructor
 use oars::constructors::Bose;
-use oars::oa::{verify_oa, OAConstructor, normalize}; 
+use oars::oa::{normalize, verify_oa, OAConstructor};
 
 #[test]
 fn test_bose_init_verify() {
