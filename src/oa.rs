@@ -201,3 +201,55 @@ pub trait OAConstructor {
     /// by the constructor itself.
     fn gen(&self) -> OAResult;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use ndarray::arr2;
+
+    #[test]
+    fn test_verify_oa_bad_in() {
+        let points = arr2(&[
+            [0, 0, 0],
+            [0, 1, 1],
+            [0, 2, 2],
+            [1, 0, 0],
+            [1, 0, 0],
+            [1, 2, 2],
+            [2, 0, 0],
+            [2, 1, 1],
+            [2, 2, 2],
+        ]);
+        let oa = OA {
+            strength: 3,
+            levels: 3,
+            index: 1,
+            factors: 3,
+            points,
+        };
+        assert!(!verify_oa(&oa));
+    }
+
+    #[test]
+    fn test_verify_oa_good_in() {
+        let points = arr2(&[
+            [0, 0, 0],
+            [0, 1, 1],
+            [0, 2, 2],
+            [1, 0, 1],
+            [1, 1, 2],
+            [1, 2, 0],
+            [2, 0, 2],
+            [2, 1, 0],
+            [2, 2, 1],
+        ]);
+        let oa = OA {
+            strength: 2,
+            levels: 3,
+            index: 1,
+            factors: 3,
+            points,
+        };
+        assert!(verify_oa(&oa));
+    }
+}
