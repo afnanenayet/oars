@@ -51,12 +51,51 @@ pub struct SOA {
     pub points: Array2<u32>,
 }
 
+/// A nested two-dimensional vector
+type Vec2D<T> = Vec<Vec<T>>;
+
+/// Recursive utility method to determine the combinations of numbers that add up to some given
+/// sum.
+///
+/// The sum is the target sum. The reduced number is the target after a number has already
+/// been tried. `arr` is the current array of numbers that add up to the sum for the stack,
+/// and `res` is a reference to an array of vectors with the results.
+fn sum_perms_helper(sum: u32, reduced_num: u32, mut arr: Vec<u32>, res: &mut Vec2D<u32>) {
+    if reduced_num == 0 {
+        res.push(arr.clone());
+    }
+
+    // the previous number stored in the array
+    let prev = *arr.last().unwrap_or(&1);
+
+    for k in prev..=sum {
+        arr.push(k);
+
+        if k < reduced_num {
+            sum_perms_helper(sum, reduced_num - k, arr.clone(), res);
+        }
+    }
+}
+
+/// Given some desired sum, find all of the combinations of numbers that add up to the desired
+/// sum. This is used to generat the strata when verifying a strong orthogonal array.
+///
+/// This method is a convenience wrapper for the recursive solver.
+fn sum_perms(sum: u32) -> Vec2D<u32> {
+    let mut res = Vec::new();
+    let arr = Vec::new();
+    sum_perms_helper(sum, sum, arr, &mut res);
+    res
+}
+
 /// Verify whether a point set is a valid strong orthogonal array based on the metadata supplied in
 /// that struct. This method returns whether the given SOA is valid, based on the metadata. It will
 /// check that the SOA maintains the stratification guarantees based on the properties of the SOA.
 pub fn verify_soa(soa: &SOA) -> bool {
     // TODO(afnan)
     // - Find some way to find every combo of numbers that adds up to `t`
+    // https://stackoverflow.com/questions/4632322/finding-all-possible-combinations-of-numbers-to-reach-a-given-sum
+    // - Collapse the OA and test each strata
     // - Write some method that generates the unshuffled stratification guarantees
     // - Check that each strata are equally filled
     // - Write unit tests
