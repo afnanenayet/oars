@@ -60,7 +60,7 @@ type Vec2D<T> = Vec<Vec<T>>;
 /// The sum is the target sum. The reduced number is the target after a number has already
 /// been tried. `arr` is the current array of numbers that add up to the sum for the stack,
 /// and `res` is a reference to an array of vectors with the results.
-fn sum_perms_helper(sum: u32, reduced_num: u32, mut arr: Vec<u32>, res: &mut Vec2D<u32>) {
+fn sum_perms_helper(sum: u32, reduced_num: u32, arr: Vec<u32>, res: &mut Vec2D<u32>) {
     if reduced_num == 0 {
         res.push(arr.clone());
     }
@@ -69,10 +69,11 @@ fn sum_perms_helper(sum: u32, reduced_num: u32, mut arr: Vec<u32>, res: &mut Vec
     let prev = *arr.last().unwrap_or(&1);
 
     for k in prev..=sum {
-        arr.push(k);
+        let mut next_arr = arr.clone();
+        next_arr.push(k);
 
-        if k < reduced_num {
-            sum_perms_helper(sum, reduced_num - k, arr.clone(), res);
+        if k <= reduced_num {
+            sum_perms_helper(sum, reduced_num - k, next_arr, res);
         }
     }
 }
@@ -93,11 +94,33 @@ fn sum_perms(sum: u32) -> Vec2D<u32> {
 /// check that the SOA maintains the stratification guarantees based on the properties of the SOA.
 pub fn verify_soa(soa: &SOA) -> bool {
     // TODO(afnan)
-    // - Find some way to find every combo of numbers that adds up to `t`
-    // https://stackoverflow.com/questions/4632322/finding-all-possible-combinations-of-numbers-to-reach-a-given-sum
     // - Collapse the OA and test each strata
     // - Write some method that generates the unshuffled stratification guarantees
     // - Check that each strata are equally filled
     // - Write unit tests
     false
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashSet;
+
+    #[test]
+    fn test_sum_perms() {
+        let res = sum_perms(5);
+        let res_set: HashSet<Vec<u32>> = res.iter().cloned().collect();
+        let ground_truth = vec![
+            vec![1, 1, 1, 1, 1],
+            vec![1, 1, 1, 2],
+            vec![1, 2, 2],
+            vec![1, 1, 3],
+            vec![2, 3],
+            vec![1, 4],
+            vec![5],
+        ];
+        for array in ground_truth {
+            assert!(res_set.contains(&array));
+        }
+    }
 }
