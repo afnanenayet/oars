@@ -104,10 +104,11 @@ pub fn verify_soa(soa: &SOA) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rand::prelude::*;
     use std::collections::HashSet;
 
     #[test]
-    fn test_sum_perms() {
+    fn test_sum_perms_ground_truth() {
         let res = sum_perms(5);
         let res_set: HashSet<Vec<u32>> = res.iter().cloned().collect();
         let ground_truth = vec![
@@ -119,8 +120,27 @@ mod tests {
             vec![1, 4],
             vec![5],
         ];
+
         for array in ground_truth {
             assert!(res_set.contains(&array));
+        }
+    }
+
+    #[test]
+    fn test_sum_perms_random() {
+        let mut rng = thread_rng();
+        let mut targets: Vec<u32> = Vec::new();
+
+        for _ in 0..10 {
+            targets.push(rng.gen_range(1, 25));
+        }
+
+        for target in targets {
+            let res: Vec2D<u32> = sum_perms(target);
+
+            for array in res {
+                assert!(array.into_iter().sum::<u32>() == target);
+            }
         }
     }
 }
