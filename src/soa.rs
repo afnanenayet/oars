@@ -112,15 +112,6 @@ pub fn verify_soa(soa: &SOA) -> bool {
             // Generate a "ground-truth" set with the combinations we should see in the SOA
             // We set this up by doing a cartesian product over a range of vectors 0..s^pow
             // for each strata power value
-            //let expected_combos: HashSet<Vec<u32>> = HashSet::from_iter(
-            //strata_perm
-            //// note that we use `into_iter` rather than `iter` because we are already
-            //// referencing the strata permutation vector and there's no benefit to
-            //// getting a pointer to a pointer
-            //.iter()
-            //.map(|x| 0..soa.base.pow(**x))
-            //.multi_cartesian_product(),
-            //);
 
             let expected_combos = strata_perm
                 // note that we use `into_iter` rather than `iter` because we are already
