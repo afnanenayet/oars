@@ -5,8 +5,7 @@
 use itertools::{zip, Itertools};
 use ndarray::Array2;
 use serde_derive::{Deserialize, Serialize};
-use std::collections::HashSet;
-use std::iter::FromIterator;
+use std::collections::{HashMap, HashSet};
 
 /// The general categories of errors for `SOAConstructionError`
 #[derive(Debug, Serialize, Deserialize)]
@@ -113,35 +112,62 @@ pub fn verify_soa(soa: &SOA) -> bool {
             // Generate a "ground-truth" set with the combinations we should see in the SOA
             // We set this up by doing a cartesian product over a range of vectors 0..s^pow
             // for each strata power value
-            let expected_combos: HashSet<Vec<u32>> = HashSet::from_iter(
-                strata_perm
-                    // note that we use `into_iter` rather than `iter` because we are already
-                    // referencing the strata permutation vector and there's no benefit to
-                    // getting a pointer to a pointer
-                    .iter()
-                    .map(|x| 0..soa.base.pow(**x))
-                    .multi_cartesian_product(),
-            );
+            //let expected_combos: HashSet<Vec<u32>> = HashSet::from_iter(
+            //strata_perm
+            //// note that we use `into_iter` rather than `iter` because we are already
+            //// referencing the strata permutation vector and there's no benefit to
+            //// getting a pointer to a pointer
+            //.iter()
+            //.map(|x| 0..soa.base.pow(**x))
+            //.multi_cartesian_product(),
+            //);
+
+            let expected_combos = strata_perm
+                // note that we use `into_iter` rather than `iter` because we are already
+                // referencing the strata permutation vector and there's no benefit to
+                // getting a pointer to a pointer
+                .iter()
+                .map(|x| 0..soa.base.pow(**x))
+                .multi_cartesian_product();
+
+            let mut combo_counter: HashMap<Vec<u32>, u32> =
+                expected_combos.map(|x| (x, 0)).collect();
 
             // for each combination of columns of size(strata_perm), check that the expected combos
             // match up with the actual combos when we "reduce" the OA to a lesser OA using the
             // method described by He and Tang (just divide by s^pow)
             // Every subset of g columns must be an OA of power g with uneven levels that were
             // determined by the power of the strata
+            // We don't care how many instances of each pair are present because He and Tang define
+            // an OA to be one with an arbitrary index (aka as long as we have the same number of
+            // each tuple we're good to go), or lambda >= 1
             let column_combos = (0..soa.points.shape()[1]).combinations(strata_perm.len());
 
             for col_combo in column_combos {
-                let mut actual_combos: HashSet<Vec<u32>> = HashSet::new();
-                let mut point = Vec::new();
+                combo_counter = combo_counter.iter().map(|(k, _)| (k.clone(), 0)).collect();
 
-                for (strata_pow, col) in zip(strata_perm.iter(), col_combo) {
-                    for row in soa.points.genrows() {
-                        point.push(row[[col]] / soa.base.pow(**strata_pow));
+                for row in soa.points.genrows() {
+                    let mut point = Vec::new();
+
+                    for (strata_pow, col) in zip(strata_perm.iter(), col_combo.iter()) {
+                        point.push(row[[*col]] / soa.base.pow(soa.strength - **strata_pow));
                     }
-                }
-                actual_combos.insert(point);
 
-                if actual_combos != expected_combos {
+                    // if the row of the reduced OA is not in the hash map, then there is an error
+                    if !combo_counter.contains_key(&point) {
+                        return false;
+                    }
+                    *combo_counter.entry(point).or_default() += 1;
+                }
+
+                // check that all entries have equal frequency and are greater than 0
+                if combo_counter.values().any(|&x| x < 1) {
+                    return false;
+                }
+
+                let uniq: HashSet<u32> = combo_counter.values().cloned().collect();
+
+                if uniq.len() > 1 {
                     return false;
                 }
             }
@@ -153,6 +179,7 @@ pub fn verify_soa(soa: &SOA) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use ndarray::array;
     use rand::prelude::*;
     use std::collections::HashSet;
 
@@ -169,7 +196,6 @@ mod tests {
             vec![1, 4],
             vec![5],
         ];
-
         for array in ground_truth {
             assert!(res_set.contains(&array));
         }
@@ -191,5 +217,112 @@ mod tests {
                 assert!(array.into_iter().sum::<u32>() == target);
             }
         }
+    }
+
+    #[test]
+    fn test_verify_valid_soa() {
+        let ground_truth = array![
+            [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [7, 6, 3, 6, 2, 2, 3, 7, 7, 6, 3],
+            [5, 5, 4, 1, 4, 0, 0, 1, 5, 5, 5],
+            [6, 3, 7, 6, 3, 6, 2, 2, 3, 7, 7],
+            [7, 6, 3, 7, 6, 3, 6, 2, 2, 3, 7],
+            [7, 7, 6, 3, 7, 6, 3, 6, 2, 2, 3],
+            [5, 5, 5, 4, 1, 5, 4, 1, 4, 0, 1],
+            [4, 1, 5, 5, 4, 1, 5, 4, 1, 4, 1],
+            [4, 0, 1, 5, 5, 4, 1, 5, 4, 1, 5],
+            [6, 2, 2, 3, 7, 7, 6, 3, 7, 6, 3],
+            [5, 4, 0, 0, 1, 5, 5, 4, 1, 5, 5],
+            [6, 3, 6, 2, 2, 3, 7, 7, 6, 3, 7],
+            [3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6],
+            [0, 1, 4, 1, 5, 5, 4, 0, 0, 1, 4],
+            [2, 2, 3, 6, 3, 7, 7, 6, 2, 2, 2],
+            [1, 4, 0, 1, 4, 1, 5, 5, 4, 0, 0],
+            [0, 1, 4, 0, 1, 4, 1, 5, 5, 4, 0],
+            [0, 0, 1, 4, 0, 1, 4, 1, 5, 5, 4],
+            [2, 2, 2, 3, 6, 2, 3, 6, 3, 7, 6],
+            [3, 6, 2, 2, 3, 6, 2, 3, 6, 3, 6],
+            [3, 7, 6, 2, 2, 3, 6, 2, 3, 6, 2],
+            [1, 5, 5, 4, 0, 0, 1, 4, 0, 1, 4],
+            [2, 3, 7, 7, 6, 2, 2, 3, 6, 2, 2],
+            [1, 4, 1, 5, 5, 4, 0, 0, 1, 4, 0],
+        ];
+        let soa = SOA {
+            strength: 3,
+            base: 2,
+            points: ground_truth,
+        };
+        assert!(verify_soa(&soa));
+    }
+
+    #[test]
+    fn test_verify_invalid_soa() {
+        let ground_truth = array![
+            [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [7, 6, 3, 6, 2, 2, 3, 7, 7, 6, 3],
+            [5, 5, 4, 1, 4, 0, 0, 1, 5, 5, 5],
+            [6, 3, 7, 6, 3, 6, 2, 2, 3, 7, 7],
+            [7, 6, 3, 7, 6, 3, 6, 2, 2, 3, 7],
+            [7, 7, 6, 3, 7, 6, 3, 6, 2, 2, 3],
+            [5, 5, 5, 4, 1, 5, 4, 1, 4, 0, 1],
+            [4, 1, 5, 5, 4, 1, 5, 4, 1, 4, 1],
+            [4, 0, 1, 5, 5, 4, 1, 5, 4, 1, 5],
+            [6, 2, 2, 3, 7, 7, 6, 3, 7, 6, 3],
+            [5, 4, 0, 0, 1, 5, 5, 4, 1, 5, 5],
+            [6, 3, 6, 2, 2, 3, 7, 7, 6, 3, 7],
+            [3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6],
+            [0, 1, 4, 1, 5, 5, 4, 0, 0, 1, 4],
+            [2, 2, 3, 6, 3, 7, 7, 6, 2, 2, 2],
+            [1, 4, 0, 1, 4, 1, 5, 5, 4, 0, 0],
+            [0, 1, 4, 0, 1, 4, 1, 5, 5, 4, 0],
+            [0, 0, 1, 4, 0, 1, 4, 1, 5, 5, 4],
+            [2, 2, 2, 3, 6, 2, 3, 6, 3, 7, 6],
+            [3, 6, 2, 2, 3, 6, 2, 3, 6, 3, 6],
+            [3, 7, 6, 2, 2, 3, 6, 2, 3, 6, 2],
+            [3, 7, 6, 2, 2, 3, 6, 2, 3, 6, 2],
+            [1, 5, 5, 4, 0, 0, 1, 4, 0, 1, 4],
+            [2, 3, 7, 7, 6, 2, 2, 3, 6, 2, 2],
+            [1, 4, 1, 5, 5, 4, 0, 0, 1, 4, 0],
+        ];
+
+        let soa = SOA {
+            strength: 3,
+            base: 2,
+            points: ground_truth,
+        };
+        assert!(!verify_soa(&soa));
+
+        let ground_truth = array![
+            [4, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+            [7, 6, 3, 6, 2, 2, 3, 7, 7, 6, 3],
+            [5, 5, 4, 1, 4, 0, 0, 1, 5, 5, 5],
+            [6, 3, 7, 6, 3, 6, 2, 2, 3, 7, 7],
+            [7, 6, 3, 7, 6, 3, 6, 2, 2, 3, 7],
+            [7, 7, 6, 3, 7, 6, 3, 6, 2, 2, 3],
+            [5, 5, 5, 4, 1, 5, 4, 1, 4, 0, 1],
+            [4, 1, 5, 5, 4, 1, 5, 4, 1, 4, 1],
+            [4, 0, 1, 5, 5, 4, 1, 5, 4, 1, 5],
+            [6, 2, 2, 3, 7, 7, 6, 3, 7, 6, 3],
+            [5, 4, 0, 0, 1, 5, 5, 4, 1, 5, 5],
+            [6, 3, 6, 2, 2, 3, 7, 7, 6, 3, 7],
+            [3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6],
+            [0, 1, 4, 1, 5, 5, 4, 0, 0, 1, 4],
+            [2, 2, 3, 6, 3, 7, 7, 6, 2, 2, 2],
+            [1, 4, 0, 1, 4, 1, 5, 5, 4, 0, 0],
+            [0, 1, 4, 0, 1, 4, 1, 5, 5, 4, 0],
+            [0, 0, 1, 4, 0, 1, 4, 1, 5, 5, 4],
+            [2, 2, 2, 3, 6, 2, 3, 6, 3, 7, 6],
+            [3, 6, 2, 2, 3, 6, 2, 3, 6, 3, 6],
+            [3, 7, 6, 2, 2, 3, 6, 2, 3, 6, 2],
+            [1, 5, 5, 4, 0, 0, 1, 4, 0, 1, 4],
+            [2, 3, 7, 7, 6, 2, 2, 3, 6, 2, 2],
+            [1, 4, 1, 5, 5, 4, 0, 0, 1, 4, 0],
+        ];
+        let soa = SOA {
+            strength: 3,
+            base: 2,
+            points: ground_truth,
+        };
+        assert!(!verify_soa(&soa));
     }
 }
