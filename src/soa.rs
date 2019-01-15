@@ -2,7 +2,7 @@
 //! This module also defines a few construction methods, as well as provide a verification method to
 //! ensure that the resulting points are stratified as an SOA should be.
 
-use itertools::Itertools;
+use itertools::{zip, Itertools};
 use ndarray::Array2;
 use serde_derive::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -118,20 +118,36 @@ pub fn verify_soa(soa: &SOA) -> bool {
                     // note that we use `into_iter` rather than `iter` because we are already
                     // referencing the strata permutation vector and there's no benefit to
                     // getting a pointer to a pointer
-                    .into_iter()
-                    .map(|x| 0..soa.base.pow(*x))
+                    .iter()
+                    .map(|x| 0..soa.base.pow(**x))
                     .multi_cartesian_product(),
             );
-            //let actual_combos = 
+
+            // for each combination of columns of size(strata_perm), check that the expected combos
+            // match up with the actual combos when we "reduce" the OA to a lesser OA using the
+            // method described by He and Tang (just divide by s^pow)
+            // Every subset of g columns must be an OA of power g with uneven levels that were
+            // determined by the power of the strata
+            let column_combos = (0..soa.points.shape()[1]).combinations(strata_perm.len());
+
+            for col_combo in column_combos {
+                let mut actual_combos: HashSet<Vec<u32>> = HashSet::new();
+                let mut point = Vec::new();
+
+                for (strata_pow, col) in zip(strata_perm.iter(), col_combo) {
+                    for row in soa.points.genrows() {
+                        point.push(row[[col]] / soa.base.pow(**strata_pow));
+                    }
+                }
+                actual_combos.insert(point);
+
+                if actual_combos != expected_combos {
+                    return false;
+                }
+            }
         }
     }
-
-    // TODO(afnan)
-    // - Collapse the OA and test each strata
-    // - Write some method that generates the unshuffled stratification guarantees
-    // - Check that each strata are equally filled
-    // - Write unit tests
-    false
+    true
 }
 
 #[cfg(test)]
