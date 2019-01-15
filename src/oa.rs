@@ -82,11 +82,11 @@ impl fmt::Display for OAConstructionError {
 }
 
 impl OAConstructionError {
-    pub fn new<T>(kind: OACErrorKind, msg: T) -> OAConstructionError
+    pub fn new<T>(kind: OACErrorKind, msg: T) -> Self
     where
         T: Into<String>,
     {
-        OAConstructionError {
+        Self {
             error_type: kind,
             desc: msg.into(),
         }

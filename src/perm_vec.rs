@@ -29,8 +29,8 @@ impl Index<usize> for PermutationVector {
 impl PermutationVector {
     /// Create a permutation vector that has not been shuffled. If you want a random permutation,
     /// you must remember to call the `shuffle()` method.
-    pub fn new(n: usize) -> PermutationVector {
-        PermutationVector {
+    pub fn new(n: usize) -> Self {
+        Self {
             vec: (0..n).collect(),
         }
     }
