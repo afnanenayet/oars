@@ -1,6 +1,6 @@
 /// Unit tests for the Bose array constructor
 use oars::constructors::Bose;
-use oars::oa::{normalize, verify_oa, OAConstructor};
+use oars::oa::{normalize, verify, OAConstructor};
 
 #[test]
 fn test_bose_init_verify() {
@@ -9,21 +9,21 @@ fn test_bose_init_verify() {
         dimensions: 2,
     };
     let oa = bose.gen().unwrap();
-    assert!(verify_oa(&oa));
+    assert!(verify(&oa));
 
     let bose = Bose {
         prime_base: 3,
         dimensions: 2,
     };
     let oa = bose.gen().unwrap();
-    assert!(verify_oa(&oa));
+    assert!(verify(&oa));
 
     let bose = Bose {
         prime_base: 3,
         dimensions: 3,
     };
     let oa = bose.gen().unwrap();
-    assert!(verify_oa(&oa));
+    assert!(verify(&oa));
 }
 
 #[test]

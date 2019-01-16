@@ -227,7 +227,7 @@ mod tests {
             factors: 3,
             points,
         };
-        assert!(!verify_oa(&oa));
+        assert!(!verify(&oa));
     }
 
     #[test]
@@ -250,6 +250,6 @@ mod tests {
             factors: 3,
             points,
         };
-        assert!(verify_oa(&oa));
+        assert!(verify(&oa));
     }
 }

@@ -243,7 +243,7 @@ mod tests {
             base: 2,
             points: ground_truth,
         };
-        assert!(verify_soa(&soa));
+        assert!(verify(&soa));
     }
 
     #[test]
@@ -281,7 +281,7 @@ mod tests {
             base: 2,
             points: ground_truth,
         };
-        assert!(!verify_soa(&soa));
+        assert!(!verify(&soa));
 
         let ground_truth = array![
             [4, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
@@ -314,6 +314,6 @@ mod tests {
             base: 2,
             points: ground_truth,
         };
-        assert!(!verify_soa(&soa));
+        assert!(!verify(&soa));
     }
 }

@@ -1,6 +1,6 @@
 /// Unit tests for the Bose array constructor
 use oars::constructors::Bush;
-use oars::oa::{normalize, verify_oa, OAConstructor};
+use oars::oa::{normalize, verify, OAConstructor};
 
 #[test]
 fn test_bush_init_verify() {
@@ -11,7 +11,7 @@ fn test_bush_init_verify() {
     };
     let oa = bush.gen().unwrap();
     println!("oa\n{:?}", oa.points);
-    assert!(verify_oa(&oa));
+    assert!(verify(&oa));
 
     let bush = Bush {
         prime_base: 3,
@@ -19,7 +19,7 @@ fn test_bush_init_verify() {
         strength: 2,
     };
     let oa = bush.gen().unwrap();
-    assert!(verify_oa(&oa));
+    assert!(verify(&oa));
 
     let bush = Bush {
         prime_base: 3,
@@ -27,7 +27,7 @@ fn test_bush_init_verify() {
         strength: 3,
     };
     let oa = bush.gen().unwrap();
-    assert!(verify_oa(&oa));
+    assert!(verify(&oa));
 
     let bush = Bush {
         prime_base: 5,
@@ -35,7 +35,7 @@ fn test_bush_init_verify() {
         strength: 4,
     };
     let oa = bush.gen().unwrap();
-    assert!(verify_oa(&oa));
+    assert!(verify(&oa));
 }
 
 #[test]
