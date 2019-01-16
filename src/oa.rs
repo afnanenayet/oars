@@ -156,7 +156,7 @@ pub fn normalize(oa: &OA, jitter: f32, randomize: bool) -> Array2<f32> {
 /// selection of $t$ columns, every possible combination of $t$-tuples must be present in that
 /// submatrix. You can easily map the combinations in a unique way using base $s$ where $s$ is
 /// the number of factors in the array (assuming it is a symmetrical array).
-pub fn verify_oa(oa: &OA) -> bool {
+pub fn verify(oa: &OA) -> bool {
     if oa.points.ndim() != 2 {
         return false;
     }

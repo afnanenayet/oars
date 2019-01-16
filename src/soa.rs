@@ -94,7 +94,7 @@ fn sum_perms(sum: u32) -> Vec2D<u32> {
 /// Verify whether a point set is a valid strong orthogonal array based on the metadata supplied in
 /// that struct. This method returns whether the given SOA is valid, based on the metadata. It will
 /// check that the SOA maintains the stratification guarantees based on the properties of the SOA.
-pub fn verify_soa(soa: &SOA) -> bool {
+pub fn verify(soa: &SOA) -> bool {
     // The exponents for each strata. For example, [1, 1, 1] means s^1 x s^1 x s^1 strata
     let strata_exp = sum_perms(soa.strength);
 
