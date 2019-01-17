@@ -18,3 +18,10 @@ features = ["serde-1"]
 [profile.release]
 lto = true
 opt-level = 3
+
+[dev-dependencies]
+criterion = "0.2"
+
+[[bench]]
+name = "bench_bose_construction"
+harness = false
