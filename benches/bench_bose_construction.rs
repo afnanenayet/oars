@@ -8,7 +8,9 @@ fn bench_bose_small(c: &mut Criterion) {
         prime_base: 3,
         dimensions: 3,
     };
-    c.bench_function("bose (base 3, dim 3)", move |b| b.iter(|| bose.gen()));
+    c.bench_function("bose (base 3, dim 3)", move |b| {
+        b.iter(|| bose.gen().unwrap())
+    });
 }
 
 fn bench_bose_large(c: &mut Criterion) {
@@ -16,7 +18,9 @@ fn bench_bose_large(c: &mut Criterion) {
         prime_base: 13,
         dimensions: 3,
     };
-    c.bench_function("bose (base 13, dim 3)", move |b| b.iter(|| bose.gen()));
+    c.bench_function("bose (base 13, dim 3)", move |b| {
+        b.iter(|| bose.gen().unwrap())
+    });
 }
 
 criterion_group!(benches, bench_bose_small, bench_bose_large);
