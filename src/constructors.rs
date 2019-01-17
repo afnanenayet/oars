@@ -156,6 +156,7 @@ impl OAConstructor for Bose {
 mod tests {
     use super::*;
     use ndarray::arr2;
+
     #[test]
     // Initialize with a non prime
     fn bose_non_prime() {
