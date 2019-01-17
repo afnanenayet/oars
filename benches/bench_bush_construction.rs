@@ -16,11 +16,11 @@ fn bench_bush_small(c: &mut Criterion) {
 
 fn bench_bush_large(c: &mut Criterion) {
     let bush = Bush {
-        prime_base: 13,
-        dimensions: 10,
-        strength: 10,
+        prime_base: 11,
+        dimensions: 5,
+        strength: 5,
     };
-    c.bench_function("Bush (base 13, dim 3, strength 10)", move |b| {
+    c.bench_function("Bush (base 11, dim 5, strength 5)", move |b| {
         b.iter(|| bush.gen().unwrap())
     });
 }
