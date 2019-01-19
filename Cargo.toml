@@ -5,8 +5,8 @@ authors = ["Afnan Enayet <afnan@afnan.io>"]
 edition = "2018"
 
 [dependencies]
-serde = "1.0"
-serde_derive = "1.0"
+serde = "1.0.85"
+serde_derive = "1.0.85"
 rand = "0.6.4"
 primes = "0.2.3"
 itertools = "0.8.0"
