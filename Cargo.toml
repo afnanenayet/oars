@@ -18,6 +18,12 @@ features = ["serde-1"]
 [profile.release]
 lto = true
 opt-level = 3
+codegen-units = 1
+
+[profile.bench]
+codegen-units = 1
+lto = true
+opt-level = 3
 
 [dev-dependencies]
 criterion = "0.2"
