@@ -155,7 +155,6 @@ pub fn verify(soa: &SOA) -> bool {
                 if combo_counter.values().any(|&x| x < 1) {
                     return false;
                 }
-
                 let uniq: HashSet<u32> = combo_counter.values().cloned().collect();
 
                 if uniq.len() > 1 {
