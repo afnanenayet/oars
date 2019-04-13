@@ -10,6 +10,7 @@ serde_derive = "1.0.88"
 rand = "0.6.5"
 primes = "0.2.3"
 itertools = "0.8.0"
+num = "0.2.0"
 
 [dependencies.ndarray]
 version = "0.12.1"

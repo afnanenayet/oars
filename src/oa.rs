@@ -4,37 +4,44 @@
 use crate::perm_vec::PermutationVector;
 use itertools::Itertools;
 use ndarray::Array2;
+use num::cast::*;
+use num::pow::Pow;
+use num::{pow, Float, FromPrimitive, Integer, Num, NumCast, ToPrimitive};
 use rand::prelude::*;
 use serde_derive::{Deserialize, Serialize};
+use std::clone::Clone;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
 
+pub trait OAInteger: NumCast + Num + Clone + Copy + Integer + FromPrimitive + ToPrimitive {}
+pub trait OAFloat: NumCast + Num + Clone + Copy + Float + FromPrimitive + ToPrimitive {}
+
 /// The definition of an orthogonal array with its point set and parameters.
 #[derive(Debug, Serialize, Deserialize)]
-pub struct OA {
+pub struct OA<T: OAInteger> {
     /// The size of the set $X$ that the array can select elements from.
-    pub levels: u32,
+    pub levels: T,
 
     /// The size of the t-tuple. In other words, this is the dimensionality of the stratification
     /// guarantee.
-    pub strength: u32,
+    pub strength: T,
 
     /// The number of columns in the orthogonal array. This is the dimensionality of the point
     /// set.
-    pub factors: u32,
+    pub factors: T,
 
     /// The number of times each t-tuple is present in the orthogonal array. Setting this to 1
     /// ensures the Latin hypercube guarantee.
-    pub index: u32,
+    pub index: T,
 
     /// The internal array that holds the data for the orthogonal array. This is not the same as
     /// the point set that can be used for Monte Carlo simulations.
-    pub points: Array2<u32>,
+    pub points: Array2<T>,
 }
 
 /// Print the metadata of the orthogonal array, then print the contents of the array.
-impl fmt::Display for OA {
+impl<T: fmt::Display + OAInteger> fmt::Display for OA<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
@@ -67,7 +74,7 @@ pub struct OAConstructionError {
 }
 
 /// A result type for orthogonal array construction
-pub type OAResult = Result<OA, OAConstructionError>;
+pub type OAResult<T> = Result<OA<T>, OAConstructionError>;
 
 impl Error for OAConstructionError {
     fn description(&self) -> &str {
@@ -103,17 +110,17 @@ impl OAConstructionError {
 /// Args:
 ///     - jitter: The factor between 0 and 1 to jitter by.
 ///     - randomize: Whether the orthogonal array should be randomly shuffled when generating points.
-pub fn normalize(oa: &OA, jitter: f32, randomize: bool) -> Array2<f32> {
+pub fn normalize<T: OAInteger, U: OAFloat>(oa: &OA<T>, jitter: U, randomize: bool) -> Array2<U> {
     if oa.points.ndim() != 2 {
         panic!("Orthogonal array must be in a 2D matrix form");
     }
 
-    if jitter < 0.0 || jitter > 1.0 {
+    if jitter.to_f64().unwrap() < 0.0 || jitter.to_f64().unwrap() > 1.0 {
         panic!("Jitter factor must be between 0.0 and 1.0 (inclusive)");
     }
 
     let dims = oa.points.shape();
-    let mut point_set = Array2::<f32>::zeros((dims[0], dims[1]));
+    let mut point_set = Array2::<U>::zeros((dims[0], dims[1]));
 
     let mut perms: Vec<PermutationVector> = Vec::new();
     let mut rng = rand::thread_rng();
@@ -141,8 +148,9 @@ pub fn normalize(oa: &OA, jitter: f32, randomize: bool) -> Array2<f32> {
 
             // Apply jitter factor (random number between 0 and jitter as an upper bound)
             // If jitter is 0, then the points will be centered in the strata.
-            let jittered_point: f32 = (oa.points[[i, j]] as f32) + (jitter * rng.gen::<f32>());
-            point_set[[shuffled_i, j]] = jittered_point / oa.strength as f32;
+            let jittered_point: U =
+                U::from(oa.points[[i, j]]).unwrap() + (jitter * U::from(rng.gen::<f64>()).unwrap());
+            point_set[[shuffled_i, j]] = jittered_point / U::from(oa.strength).unwrap();
         }
     }
     point_set
@@ -156,38 +164,45 @@ pub fn normalize(oa: &OA, jitter: f32, randomize: bool) -> Array2<f32> {
 /// selection of $t$ columns, every possible combination of $t$-tuples must be present in that
 /// submatrix. You can easily map the combinations in a unique way using base $s$ where $s$ is
 /// the number of factors in the array (assuming it is a symmetrical array).
-pub fn verify(oa: &OA) -> bool {
+pub fn verify<T: OAInteger>(oa: &OA<T>) -> bool {
     if oa.points.ndim() != 2 {
         return false;
     }
 
-    if oa.points.shape()[1] != oa.factors as usize {
+    if oa.points.shape()[1] != oa.factors.to_usize().unwrap() {
         return false;
     }
 
-    let col_combos = (0..oa.factors).combinations(oa.strength as usize);
+    let col_combos =
+        (0..oa.factors.to_u64().unwrap()).combinations(oa.strength.to_usize().unwrap());
 
     // this iterator gives us every possible combination of columns
     for selection in col_combos {
         // tuple count holds the count for how many times each possible tuple is seen
-        let mut tuple_count: HashMap<u32, u32> = HashMap::new();
+        let mut tuple_count: HashMap<u64, u64> = HashMap::new();
 
         // loop through the points and count up how many times we encounter the tuple
         for i in 0..oa.points.shape()[0] {
             let mut tuple_index = 0;
 
-            for (pow, column) in selection.iter().enumerate() {
-                tuple_index +=
-                    oa.points[[i as usize, *column as usize]] * oa.levels.pow(pow as u32);
+            for (power, column) in selection.iter().enumerate() {
+                tuple_index += (oa.points[[i as usize, *column as usize]] * pow(oa.levels, power))
+                    .to_u64()
+                    .unwrap();
             }
             // set count to 1 if it doesn't exist, otherwise update the count
             *tuple_count.entry(tuple_index).or_insert(0) += 1;
         }
 
         // now verify that the hashmap has every possible combination, `index` times
-        for i in 0..oa.levels.pow(oa.strength) {
+        for i in 0..oa
+            .levels
+            .to_u64()
+            .unwrap()
+            .pow(oa.strength.to_u32().unwrap())
+        {
             // if the entry is not present in the array, set the count to 0
-            if *tuple_count.entry(i).or_insert(0) != oa.index {
+            if *tuple_count.entry(i).or_insert(0) != oa.index.to_u64().unwrap() {
                 return false;
             }
         }
@@ -196,10 +211,10 @@ pub fn verify(oa: &OA) -> bool {
 }
 
 /// A generic trait to demarcate orthogonal array constructors
-pub trait OAConstructor {
+pub trait OAConstructor<T: OAInteger> {
     /// The method that generates an orthogonal array. Any necessary parameters must be handled
     /// by the constructor itself.
-    fn gen(&self) -> OAResult;
+    fn gen(&self) -> OAResult<T>;
 }
 
 #[cfg(test)]

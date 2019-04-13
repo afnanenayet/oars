@@ -1,4 +1,7 @@
-/// Misc utilities and convenience functions for the crate
+//! Misc utilities and convenience functions for the crate
+
+use num::{Integer, NumCast, ToPrimitive};
+use std::clone::Clone;
 use std::vec::Vec;
 
 /// Convert a number to an arbitrary base with a fixed number of digits
@@ -6,15 +9,18 @@ use std::vec::Vec;
 /// Given some number, convert the number to some base with a specified number of digits. This
 /// means that numbers can be truncated if `degree` is too small. This also means that numbers may
 /// be zero-padded.
-pub fn to_base_fixed(num: u32, base: u32, degree: u32) -> Vec<u32> {
+pub fn to_base_fixed<T>(num: T, base: T, degree: T) -> Vec<T>
+where
+    T: Integer + NumCast + Clone + Copy,
+{
     // The number in a the new base
-    let mut new_base = vec![0; degree as usize];
+    let mut new_base = vec![T::from(0).unwrap(); degree.to_usize().unwrap()];
     let mut new_num = num;
 
-    for i in 0..degree {
+    for i in 0..degree.to_usize().unwrap() {
         let i = i as usize;
         new_base[i] = new_num % base;
-        new_num /= base;
+        new_num = new_num / base;
     }
     new_base
 }
@@ -23,12 +29,15 @@ pub fn to_base_fixed(num: u32, base: u32, degree: u32) -> Vec<u32> {
 ///
 /// Using a coefficient vector, where the index of the vector signifies the location, evaluate
 /// the given polynomial. This method uses Horner's rule to evaluate the polynomial efficiently.
-pub fn poly_eval(coeffs: &[u32], position: u32) -> u32 {
-    let mut result = 0;
+pub fn poly_eval<T>(coeffs: &[T], position: T) -> T
+where
+    T: Integer + NumCast + Copy,
+{
+    let mut result: T = T::from(0).unwrap();
 
     // Using Horner's rule
     for i in (0..coeffs.len()).rev() {
-        result = (result * position) + coeffs[i as usize];
+        result = (result * position) + coeffs[i.to_usize().unwrap()];
     }
     result
 }

@@ -7,9 +7,10 @@
 //! The description of the construction method will be with the struct that contains
 //! the parameters.
 
-use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, OA};
+use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAInteger, OAResult, OA};
 use crate::utils::{poly_eval, to_base_fixed};
 use ndarray::Array2;
+use num::pow::pow;
 use primes::is_prime;
 use std::cmp::min;
 
@@ -17,68 +18,73 @@ use std::cmp::min;
 ///
 /// The Bush construction technique, as described by Art Owen in his currently unpublished Monte
 /// Carlo textbook. In Chapter 10.4, he describes the Bush construction technique.
-pub struct Bush {
+pub struct Bush<T: OAInteger> {
     /// The strength of the orthogonal array. It *must* be a prime number.
-    pub prime_base: u32,
+    pub prime_base: T,
 
     /// The desired strength of the orthogonal array. It must be greater than or equal to 2.
     /// It must also be
-    pub strength: u32,
+    pub strength: T,
 
     /// The dimensionality of the orthogonal array
-    pub dimensions: u32,
+    pub dimensions: T,
 }
 
-impl Bush {
+impl<T: OAInteger> Bush<T> {
     /// Verify the parameters for Bush construction. This checks to see whether the prime base
     /// is valid and returns whether the parameters are correct.
     ///
     /// For the Bush construction, the strength, `s`, must be between 2 and `p + 1`.
     /// The resulting OA will have `p` levels, a strength of `t`, and `p^t` samples.
     fn verify_params(&self) -> bool {
-        if !is_prime(u64::from(self.prime_base)) {
+        if !is_prime(self.prime_base.to_u64().unwrap()) {
             return false;
         }
 
-        if self.dimensions < 2 || self.dimensions > self.prime_base + 1 {
+        if self.dimensions < T::from(2).unwrap()
+            || self.dimensions > self.prime_base + T::from(1).unwrap()
+        {
             return false;
         }
 
-        if self.strength < 1 || self.strength > self.prime_base {
+        if self.strength < T::from(1).unwrap() || self.strength > self.prime_base {
             return false;
         }
         true
     }
 }
 
-impl OAConstructor for Bush {
-    fn gen(&self) -> OAResult {
+impl<T: OAInteger> OAConstructor<T> for Bush<T> where {
+    fn gen(&self) -> OAResult<T> {
         if !self.verify_params() {
             return Err(OAConstructionError::new(
                 OACErrorKind::InvalidParams,
                 "Invalid parameters",
             ));
         }
-        let n = self.prime_base.pow(self.strength);
-        let mut points = Array2::<u32>::zeros((n as usize, self.dimensions as usize));
+        let n = pow(self.prime_base, self.strength.to_usize().unwrap());
+        let mut points =
+            Array2::<T>::zeros((n.to_usize().unwrap(), self.dimensions.to_usize().unwrap()));
 
-        for i in 0..n {
-            let coeffs = to_base_fixed(i, self.prime_base, self.strength);
+        for i in 0..n.to_usize().unwrap() {
+            let coeffs = to_base_fixed(T::from(i).unwrap(), self.prime_base, self.strength);
             let poly_dims = min(self.dimensions, self.prime_base);
 
-            for j in 0..poly_dims {
-                points[[i as usize, j as usize]] = poly_eval(&coeffs, j) % self.prime_base;
+            for j in 0..poly_dims.to_usize().unwrap() {
+                points[[i as usize, j as usize]] =
+                    poly_eval(&coeffs, T::from(j).unwrap()) % self.prime_base;
             }
 
-            if self.dimensions == self.prime_base + 1 {
-                points[[i as usize, self.prime_base as usize]] = (i - 1) % self.prime_base;
+            if self.dimensions == self.prime_base + T::from(1).unwrap() {
+                points[[i, self.prime_base.to_usize().unwrap()]] =
+                    T::from(i - 1).unwrap() % self.prime_base;
             }
         }
 
         Ok(OA {
             strength: self.strength,
             levels: self.prime_base,
-            index: 1,
+            index: T::from(1).unwrap(),
             factors: self.dimensions,
             points,
         })
@@ -94,59 +100,62 @@ impl OAConstructor for Bush {
 ///
 /// `dimensions` determines how many dimensions the resulting point set will
 /// be. It must be between 2 and $p + 1$, inclusive.
-pub struct Bose {
+pub struct Bose<T: OAInteger> {
     /// The strength of the orthogonal array. It *must* be a prime number.
-    pub prime_base: u32,
+    pub prime_base: T,
 
     /// The dimensionality of the orthogonal array
-    pub dimensions: u32,
+    pub dimensions: T,
 }
 
-impl Bose {
+impl<T: OAInteger> Bose<T> {
     /// Verify the parameters for Bose construction and return whether they
     /// are valid.
     fn verify_params(&self) -> bool {
-        if self.dimensions < 2 || self.dimensions > self.prime_base + 1 {
+        if self.dimensions < T::from(2).unwrap()
+            || self.dimensions > self.prime_base + T::from(1).unwrap()
+        {
             return false;
         }
 
-        if !is_prime(u64::from(self.prime_base)) {
+        if !is_prime(self.prime_base.to_u64().unwrap()) {
             return false;
         }
         true
     }
 }
 
-impl OAConstructor for Bose {
-    fn gen(&self) -> OAResult {
+impl<T: OAInteger> OAConstructor<T> for Bose<T> {
+    fn gen(&self) -> OAResult<T> {
         if !self.verify_params() {
             return Err(OAConstructionError::new(
                 OACErrorKind::InvalidParams,
                 "invalid parameters",
             ));
         }
-
-        let n = self.prime_base.pow(2);
-        let mut points = Array2::<u32>::zeros((n as usize, self.dimensions as usize));
+        let n = pow(self.prime_base, 2);
+        let mut points =
+            Array2::<T>::zeros((n.to_usize().unwrap(), self.dimensions.to_usize().unwrap()));
 
         // Initialize dims 1 and 2 with the special construction technique
-        for i in 0..n {
-            points[[i as usize, 0]] = i / self.prime_base;
-            points[[i as usize, 1]] = i % self.prime_base;
+        for i in 0..n.to_usize().unwrap() {
+            points[[i as usize, 0]] = T::from(i).unwrap() / self.prime_base;
+            points[[i as usize, 1]] = T::from(i).unwrap() % self.prime_base;
         }
 
-        for i in 0..n {
-            for j in 2..self.dimensions {
-                points[[i as usize, j as usize]] =
-                    (points[[i as usize, 0]] + (j - 1) * points[[i as usize, 1]]) % self.prime_base;
+        for i in 0..n.to_usize().unwrap() {
+            for j in 2..self.dimensions.to_usize().unwrap() {
+                points[[i, j]] = (points[[i, 0]]
+                    + T::from(j - 1).unwrap() * points[[i as usize, 1]])
+                    % self.prime_base;
             }
         }
 
         Ok(OA {
-            strength: 2,
+            strength: T::from(2).unwrap(),
             levels: self.prime_base,
             factors: self.dimensions,
-            index: 1,
+            index: T::from(1).unwrap(),
             points,
         })
     }
@@ -160,9 +169,9 @@ mod tests {
     #[test]
     // Initialize with a non prime
     fn bose_non_prime() {
-        let bose = Bose {
-            prime_base: 4,
-            dimensions: 3,
+        let bose: Bose<u32> = Bose {
+            prime_base: u32::From(4),
+            dimensions: u32::From(3),
         };
         assert!(bose.gen().is_err());
     }
