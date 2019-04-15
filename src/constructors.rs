@@ -165,13 +165,14 @@ impl<T: OAInteger> OAConstructor<T> for Bose<T> {
 mod tests {
     use super::*;
     use ndarray::arr2;
+    use num::traits::*;
 
     #[test]
     // Initialize with a non prime
     fn bose_non_prime() {
-        let bose: Bose<u32> = Bose {
-            prime_base: u32::From(4),
-            dimensions: u32::From(3),
+        let bose: Bose = Bose {
+            prime_base: 4,
+            dimensions: 4,
         };
         assert!(bose.gen().is_err());
     }
