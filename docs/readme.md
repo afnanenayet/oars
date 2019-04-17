@@ -45,6 +45,15 @@ Mac and Linux machines.
 Of course, if you find any issues, please file an issue or send a PR. Feature
 requests are also welcome.
 
+If you want to enable serialization support for this library, include your
+dependency as such:
+
+```toml
+[dependencies.oars]
+version = "0.1.0"
+features = ["serialize"]
+```
+
 ## Roadmap
 
 - [ ] provide parallelized constructors and method variants
