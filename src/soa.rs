@@ -4,11 +4,10 @@
 
 use itertools::{zip, Itertools};
 use ndarray::Array2;
-use serde_derive::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 
 /// The general categories of errors for `SOAConstructionError`
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub enum SOACErrorKind {
     /// Invalid parameters were supplied to the constructor
     InvalidParams,
