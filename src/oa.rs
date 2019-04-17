@@ -18,7 +18,7 @@ use std::fmt;
 #[derive(Debug)]
 #[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
 pub struct OA<T: OAInteger> {
-    /// The size of the set $X$ that the array can select elements from.
+    /// The size of the set `X` that the array can select elements from.
     pub levels: T,
 
     /// The size of the t-tuple. In other words, this is the dimensionality of the stratification
@@ -38,7 +38,7 @@ pub struct OA<T: OAInteger> {
     pub points: Array2<T>,
 }
 
-/// Print the metadata of the orthogonal array, then print the contents of the array.
+/// Prints the metadata of the orthogonal array, then prints the contents of the array
 impl<T> fmt::Display for OA<T>
 where
     T: fmt::Display + OAInteger,
