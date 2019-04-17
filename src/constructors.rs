@@ -9,9 +9,9 @@
 
 use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, OA};
 use crate::utils::{poly_eval, to_base_fixed};
-use num::{NumCast, Integer};
 use ndarray::Array2;
 use num::pow::pow;
+use num::{Integer, NumCast};
 use primes::is_prime;
 use std::cmp::min;
 
