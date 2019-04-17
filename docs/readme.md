@@ -16,6 +16,11 @@ These orthogonal arrays are not predefined and are constructed on the fly.
 If you want to create orthogonal arrays using predefined lookup tables,
 there are many resources online that provide the numbers for you to use.
 
+For more information about orthogonal arrays and their use in Monte Carlo
+sampling, check out
+[Chapter 10](https://statweb.stanford.edu/~owen/mc/Ch-var-adv.pdf)
+of Art Owen's Monte Carlo book
+
 ## Development
 
 This project only relies on the [ndarray](https://github.com/rust-ndarray/ndarray)
@@ -31,7 +36,7 @@ cargo build
 cargo build --release
 ```
 
-This will also be available in https://crates.io
+This will also be available at https://crates.io
 
 ### Usage
 
@@ -50,7 +55,7 @@ dependency as such:
 
 ```toml
 [dependencies.oars]
-version = "0.1.0"
+version = "0.2.0"
 features = ["serialize"]
 ```
 
@@ -58,4 +63,4 @@ features = ["serialize"]
 
 - [ ] provide parallelized constructors and method variants
 - [ ] Infer OA properties/verify them without being provided the explicit
-  parameters
+      parameters
