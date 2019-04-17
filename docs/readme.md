@@ -9,8 +9,8 @@ oa-rs/oars is a library for constructing orthogonal arrays (OAs) with various
 parameters, with the ability to construct OAs using multiple construction
 methods. It also provides utilities for constructing strong orthogonal arrays
 that work with the facilities for existing OAs or constructing SOAs from scratch.
-
-There are utilities for verifying OAs and SOAs.
+On top of being able to generated orthogonal arrays, this crate provides
+utilities to verify orthogonal arrays given a set of parameters.
 
 These orthogonal arrays are not predefined and are constructed on the fly.
 If you want to create orthogonal arrays using predefined lookup tables,
@@ -20,7 +20,8 @@ there are many resources online that provide the numbers for you to use.
 
 This project only relies on the [ndarray](https://github.com/rust-ndarray/ndarray)
 crate. There are several optimizations that can be applied to the crate for
-compilation, such as `BLAS` acceleration.
+compilation, such as `BLAS` acceleration. You can optionally enable `serde`
+support for the orthogonal array structs with `features = ["serialization"]`.
 
 This crate was made for the stable compiler, so building is as simple as
 
@@ -46,6 +47,6 @@ requests are also welcome.
 
 ## Roadmap
 
-- [x] implement Bose constructor
-- [x] implement Bush constructor
 - [ ] provide parallelized constructors and method variants
+- [ ] Infer OA properties/verify them without being provided the explicit
+  parameters
