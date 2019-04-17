@@ -1,17 +1,27 @@
 //! Misc utilities and convenience functions for the crate
 
-use num::{Integer, NumCast, ToPrimitive};
-use std::clone::Clone;
+use num::{Float, Integer, NumCast, ToPrimitive};
 use std::vec::Vec;
+
+/// A generic integer type that is compatible with the orthogonal array and strong orthogonal array
+/// definitions in the library. Almost every type that is compatible with `num::Integer` from the
+/// num-traits crate should be compatible with this integer type.
+pub trait OAInteger: NumCast + Integer + Copy {}
+impl<T> OAInteger for T where T: NumCast + Integer + Copy {}
+
+/// A generic float type that is compatible with the orthogonal array and strong orthogonal array
+/// definitions in the library. Almost every type that is compatible with `num::Float` from the
+/// num-traits crate should be compatible with this float type.
+pub trait OAFloat: NumCast + Float + Copy {}
+impl<T> OAFloat for T where T: NumCast + Float + Copy {}
 
 /// Convert a number to an arbitrary base with a fixed number of digits
 ///
 /// Given some number, convert the number to some base with a specified number of digits. This
 /// means that numbers can be truncated if `degree` is too small. This also means that numbers may
 /// be zero-padded.
-pub fn to_base_fixed<T>(num: T, base: T, degree: T) -> Vec<T>
+pub fn to_base_fixed<T: OAInteger>(num: T, base: T, degree: T) -> Vec<T>
 where
-    T: Integer + NumCast + Clone + Copy,
 {
     // The number in a the new base
     let mut new_base = vec![T::from(0).unwrap(); degree.to_usize().unwrap()];

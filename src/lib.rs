@@ -13,14 +13,15 @@
 //! and back.
 //!
 //! Many of the techniques used in this library were either taken from or inspired by Art Owen's
-//! currently unpublished book about Monte Carlo integration. This library was also developed by a
-//! member of Dartmouth's Visual Computing Lab under the tutelage of Dr. Wojciech Jarosz.
+//! currently unpublished book about Monte Carlo integration. This library was also developed
+//! through the Dartmouth Visual Computing Lab under the tutelage of Dr. Wojciech Jarosz.
 //!
 //! # Example Usage
 //!
 //! ```
 //! use oars::constructors::Bose;
-//! use oars::oa::{OAConstructor, normalize};
+//! use oars::oa::{OAConstructor, normalize, verify};
+//! use oars::OAInteger;
 //!
 //! // Configure the parameters for the bose construction
 //! let bose = Bose {
@@ -31,6 +32,9 @@
 //! // Use the OAConstructor method to generate the orthogonal array
 //! let oa = bose.gen().unwrap();
 //!
+//! // Verify that the orthogonal array is correct according to its parameters
+//! assert!(verify(&oa));
+//!
 //! // Convert the orthogonal array into a point set usable for Monte Carlo, without jittering
 //! let points = normalize(&oa, 0.0, true);
 //! ```
@@ -40,3 +44,7 @@ pub mod oa;
 mod perm_vec;
 pub mod soa;
 mod utils;
+
+// Export these types because any consumer of this library will need to have these type definitions
+// in order to use the OA/SOA definitions and constructors
+pub use utils::{OAFloat, OAInteger};

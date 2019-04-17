@@ -4,9 +4,10 @@
 use crate::perm_vec::PermutationVector;
 use itertools::Itertools;
 use ndarray::Array2;
-use num::{pow, Float, Integer, NumCast, ToPrimitive};
+use num::{pow, ToPrimitive};
 use rand::prelude::*;
 
+use crate::utils::{OAFloat, OAInteger};
 #[cfg(feature = "serialize")]
 use serde_derive::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -16,7 +17,7 @@ use std::fmt;
 /// The definition of an orthogonal array with its point set and parameters.
 #[derive(Debug)]
 #[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
-pub struct OA<T: NumCast + Integer + Copy> {
+pub struct OA<T: OAInteger> {
     /// The size of the set $X$ that the array can select elements from.
     pub levels: T,
 
@@ -40,7 +41,7 @@ pub struct OA<T: NumCast + Integer + Copy> {
 /// Print the metadata of the orthogonal array, then print the contents of the array.
 impl<T> fmt::Display for OA<T>
 where
-    T: fmt::Display + Integer + Copy + NumCast,
+    T: fmt::Display + OAInteger,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
@@ -110,11 +111,7 @@ impl OAConstructionError {
 /// Args:
 ///     - jitter: The factor between 0 and 1 to jitter by, within each strata
 ///     - randomize: Whether the orthogonal array should be randomly shuffled when generating points
-pub fn normalize<T, U>(oa: &OA<T>, jitter: U, randomize: bool) -> Array2<U>
-where
-    T: Integer + NumCast + Copy,
-    U: Float + NumCast + Copy,
-{
+pub fn normalize<T: OAInteger, U: OAFloat>(oa: &OA<T>, jitter: U, randomize: bool) -> Array2<U> {
     if oa.points.ndim() != 2 {
         panic!("Orthogonal array must be in a 2D matrix form");
     }
@@ -168,9 +165,8 @@ where
 /// selection of $t$ columns, every possible combination of $t$-tuples must be present in that
 /// submatrix. You can easily map the combinations in a unique way using base $s$ where $s$ is
 /// the number of factors in the array (assuming it is a symmetrical array).
-pub fn verify<T>(oa: &OA<T>) -> bool
+pub fn verify<T: OAInteger>(oa: &OA<T>) -> bool
 where
-    T: NumCast + Integer + Copy,
 {
     if oa.points.ndim() != 2 {
         return false;
@@ -218,10 +214,7 @@ where
 }
 
 /// A generic trait to demarcate orthogonal array constructors
-pub trait OAConstructor<T>
-where
-    T: NumCast + Copy + Integer,
-{
+pub trait OAConstructor<T: OAInteger> {
     /// The method that generates an orthogonal array. Any necessary parameters must be handled
     /// by the constructor itself.
     fn gen(&self) -> OAResult<T>;
