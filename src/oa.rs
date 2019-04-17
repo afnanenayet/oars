@@ -108,8 +108,8 @@ impl OAConstructionError {
 /// and Bush construction._
 ///
 /// Args:
-///     - jitter: The factor between 0 and 1 to jitter by.
-///     - randomize: Whether the orthogonal array should be randomly shuffled when generating points.
+///     - jitter: The factor between 0 and 1 to jitter by, within each strata
+///     - randomize: Whether the orthogonal array should be randomly shuffled when generating points
 pub fn normalize<T, U>(oa: &OA<T>, jitter: U, randomize: bool) -> Array2<U>
 where
     T: Integer + NumCast + Copy,

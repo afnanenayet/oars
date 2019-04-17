@@ -31,7 +31,7 @@
 //! // Use the OAConstructor method to generate the orthogonal array
 //! let oa = bose.gen().unwrap();
 //!
-//! // convert the orthogonal array into a point set usable for monte carlo
+//! // Convert the orthogonal array into a point set usable for Monte Carlo, without jittering
 //! let points = normalize(&oa, 0.0, true);
 //! ```
 
