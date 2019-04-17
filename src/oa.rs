@@ -4,22 +4,19 @@
 use crate::perm_vec::PermutationVector;
 use itertools::Itertools;
 use ndarray::Array2;
-use num::cast::*;
-use num::pow::Pow;
-use num::{pow, Float, FromPrimitive, Integer, Num, NumCast, ToPrimitive};
+use num::{pow, Float, Integer, NumCast, ToPrimitive};
 use rand::prelude::*;
 use serde_derive::{Deserialize, Serialize};
-use std::clone::Clone;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
 
-pub trait OAInteger: NumCast + Num + Clone + Copy + Integer + FromPrimitive + ToPrimitive {}
-pub trait OAFloat: NumCast + Num + Clone + Copy + Float + FromPrimitive + ToPrimitive {}
+//pub trait OAInteger: NumCast + Copy + Integer {}
+//pub trait OAFloat: NumCast + Copy + Float {}
 
 /// The definition of an orthogonal array with its point set and parameters.
 #[derive(Debug, Serialize, Deserialize)]
-pub struct OA<T: OAInteger> {
+pub struct OA<T: NumCast + Integer + Copy> {
     /// The size of the set $X$ that the array can select elements from.
     pub levels: T,
 
@@ -41,7 +38,10 @@ pub struct OA<T: OAInteger> {
 }
 
 /// Print the metadata of the orthogonal array, then print the contents of the array.
-impl<T: fmt::Display + OAInteger> fmt::Display for OA<T> {
+impl<T> fmt::Display for OA<T>
+where
+    T: fmt::Display + Integer + Copy + NumCast,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
@@ -110,7 +110,11 @@ impl OAConstructionError {
 /// Args:
 ///     - jitter: The factor between 0 and 1 to jitter by.
 ///     - randomize: Whether the orthogonal array should be randomly shuffled when generating points.
-pub fn normalize<T: OAInteger, U: OAFloat>(oa: &OA<T>, jitter: U, randomize: bool) -> Array2<U> {
+pub fn normalize<T, U>(oa: &OA<T>, jitter: U, randomize: bool) -> Array2<U>
+where
+    T: Integer + NumCast + Copy,
+    U: Float + NumCast + Copy,
+{
     if oa.points.ndim() != 2 {
         panic!("Orthogonal array must be in a 2D matrix form");
     }
@@ -164,7 +168,10 @@ pub fn normalize<T: OAInteger, U: OAFloat>(oa: &OA<T>, jitter: U, randomize: boo
 /// selection of $t$ columns, every possible combination of $t$-tuples must be present in that
 /// submatrix. You can easily map the combinations in a unique way using base $s$ where $s$ is
 /// the number of factors in the array (assuming it is a symmetrical array).
-pub fn verify<T: OAInteger>(oa: &OA<T>) -> bool {
+pub fn verify<T>(oa: &OA<T>) -> bool
+where
+    T: NumCast + Integer + Copy,
+{
     if oa.points.ndim() != 2 {
         return false;
     }
@@ -186,7 +193,7 @@ pub fn verify<T: OAInteger>(oa: &OA<T>) -> bool {
             let mut tuple_index = 0;
 
             for (power, column) in selection.iter().enumerate() {
-                tuple_index += (oa.points[[i as usize, *column as usize]] * pow(oa.levels, power))
+                tuple_index += (oa.points[[i, column.to_usize().unwrap()]] * pow(oa.levels, power))
                     .to_u64()
                     .unwrap();
             }
@@ -211,7 +218,10 @@ pub fn verify<T: OAInteger>(oa: &OA<T>) -> bool {
 }
 
 /// A generic trait to demarcate orthogonal array constructors
-pub trait OAConstructor<T: OAInteger> {
+pub trait OAConstructor<T>
+where
+    T: NumCast + Copy + Integer,
+{
     /// The method that generates an orthogonal array. Any necessary parameters must be handled
     /// by the constructor itself.
     fn gen(&self) -> OAResult<T>;
@@ -221,6 +231,7 @@ pub trait OAConstructor<T: OAInteger> {
 mod tests {
     use super::*;
     use ndarray::arr2;
+    use num::FromPrimitive;
 
     #[test]
     fn test_verify_oa_bad_in() {
