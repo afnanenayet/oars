@@ -6,15 +6,16 @@ use itertools::Itertools;
 use ndarray::Array2;
 use num::{pow, Float, Integer, NumCast, ToPrimitive};
 use rand::prelude::*;
+
+#[cfg(feature = "serialize")]
+use serde_derive::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
 
-//pub trait OAInteger: NumCast + Copy + Integer {}
-//pub trait OAFloat: NumCast + Copy + Float {}
-
 /// The definition of an orthogonal array with its point set and parameters.
 #[derive(Debug)]
+#[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
 pub struct OA<T: NumCast + Integer + Copy> {
     /// The size of the set $X$ that the array can select elements from.
     pub levels: T,
