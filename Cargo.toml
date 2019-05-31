@@ -15,15 +15,12 @@ num = "0.2.0"
 ndarray = "0.12.1"
 serde = { version = "1.0", optional = true }
 serde_derive = { version = "1.0", optional = true }
+rayon = { version = "1.0", optional = true }
 
 [features]
 default = []
 serialize = ["serde", "serde_derive", "ndarray/serde-1"]
-
-[profile.release]
-lto = true
-opt-level = 3
-codegen-units = 1
+parallel = ["rayon"]
 
 [profile.bench]
 codegen-units = 1

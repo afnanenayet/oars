@@ -220,6 +220,13 @@ pub trait OAConstructor<T: OAInteger> {
     fn gen(&self) -> OAResult<T>;
 }
 
+/// A generic trait that demarcates a parallelized orthogonal array constructor.
+pub trait ParOAConstructor<T: OAInteger> {
+    /// Generate an orthogonal array utilizing multithreading. Any necessary parameters must be
+    /// handled by the constructor itself.
+    fn gen(&self) -> OAResult<T>;
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
