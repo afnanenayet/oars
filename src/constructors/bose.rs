@@ -87,7 +87,7 @@ impl<T> ParOAConstructor<T> for Bose<T>
 where
     T: NumCast + Integer + Copy,
 {
-    fn gen(&self) -> OAResult<T> {
+    fn gen_par(&self) -> OAResult<T> {
         if !self.verify_params() {
             return Err(OAConstructionError::new(
                 OACErrorKind::InvalidParams,
