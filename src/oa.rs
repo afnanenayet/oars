@@ -224,7 +224,7 @@ pub trait OAConstructor<T: OAInteger> {
 pub trait ParOAConstructor<T: OAInteger> {
     /// Generate an orthogonal array utilizing multithreading. Any necessary parameters must be
     /// handled by the constructor itself.
-    fn gen(&self) -> OAResult<T>;
+    fn gen_par(&self) -> OAResult<T>;
 }
 
 #[cfg(test)]
