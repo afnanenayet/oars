@@ -1,8 +1,17 @@
-use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, ParOAConstructor, OA};
-use ndarray::Array2;
-use num::pow::pow;
+use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, OA};
+use ndarray::{Array2, Axis};
 use num::{Integer, NumCast};
 use primes::is_prime;
+use num::pow;
+
+#[cfg(feature = "parallel")]
+use rayon::prelude::*;
+
+#[cfg(feature = "parallel")]
+use ndarray_parallel::prelude::*;
+
+#[cfg(feature = "parallel")]
+use crate::oa::ParOAConstructor;
 
 /// Generate an orthogonal array with any prime base and a strength of 2
 ///
@@ -83,6 +92,7 @@ where
     }
 }
 
+#[cfg(feature = "parallel")]
 impl<T> ParOAConstructor<T> for Bose<T>
 where
     T: NumCast + Integer + Copy,
@@ -94,25 +104,37 @@ where
                 "invalid parameters",
             ));
         }
-
         let n = pow(self.prime_base, 2);
         let mut points =
             Array2::<T>::zeros((n.to_usize().unwrap(), self.dimensions.to_usize().unwrap()));
 
-        // Initialize dims 1 and 2 with the special construction technique
-        for i in 0..n.to_usize().unwrap() {
-            points[[i as usize, 0]] = T::from(i).unwrap() / self.prime_base;
-            points[[i as usize, 1]] = T::from(i).unwrap() % self.prime_base;
-        }
+        // Initialize the first two dimensions first, since all subsequent dimensions depend on the
+        // these dims
+        points
+            .axis_iter_mut(Axis(0))
+            .into_par_iter()
+            .enumerate()
+            .map(|(row_idx, row)| {
+                row.par_iter_mut()
+                    .take(2)
+                    .enumerate(|(col_idx, val)| match col_idx {
+                        0 => T::from(row_idx).unwrap() / self.prime_base,
+                        1 => T::from(row_idx).unwrap() % self.prime_base,
+                    })
+            });
 
-        for i in 0..n.to_usize().unwrap() {
-            for j in 2..self.dimensions.to_usize().unwrap() {
-                points[[i, j]] = (points[[i, 0]]
-                    + T::from(j - 1).unwrap() * points[[i as usize, 1]])
-                    % self.prime_base;
-            }
-        }
-
+        // every remaining point can be calculated independently, so we separate them out into a
+        // different threadpool
+        points
+            .axis_iter(Axis(0))
+            .par_iter_mut()
+            .enumerate(|(row_idx, row)| {
+                row.par_iter_mut().skip(2).enumerate(|(col_idx, val)| {
+                    points[[row_idx, 0]]
+                        + T::from(col_idx - 1).unwrap() * points[[row_idx as usize, 1]]
+                            % self.prime_base
+                })
+            });
         Ok(OA {
             strength: T::from(2).unwrap(),
             levels: self.prime_base,
