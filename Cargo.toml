@@ -34,7 +34,9 @@ criterion = "0.2"
 [[bench]]
 name = "bench_bose_construction"
 harness = false
+required-features = ["parallel"]
 
 [[bench]]
 name = "bench_bush_construction"
 harness = false
+required-features = ["parallel"]
