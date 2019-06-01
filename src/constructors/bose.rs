@@ -1,8 +1,17 @@
-use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, ParOAConstructor, OA};
-use ndarray::Array2;
-use num::pow::pow;
-use num::{Integer, NumCast};
+use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, OA};
+use ndarray::{Array2, Axis};
+use num::pow;
 use primes::is_prime;
+use crate::utils::OAInteger;
+
+#[cfg(feature = "parallel")]
+use rayon::prelude::*;
+
+#[cfg(feature = "parallel")]
+use ndarray_parallel::prelude::*;
+
+#[cfg(feature = "parallel")]
+use crate::oa::ParOAConstructor;
 
 /// Generate an orthogonal array with any prime base and a strength of 2
 ///
