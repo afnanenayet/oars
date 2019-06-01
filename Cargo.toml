@@ -9,7 +9,7 @@ maintenance = { status = "actively-maintained" }
 license = "MIT"
 
 [badges]
-travis-ci = { "afnanenayet/oars", branch = "master" }
+travis-ci = { repository = "afnanenayet/oars", branch = "master" }
 
 [dependencies]
 rand = "0.6.5"

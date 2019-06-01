@@ -22,9 +22,7 @@ use crate::oa::ParOAConstructor;
 ///
 /// `dimensions` determines how many dimensions the resulting point set will
 /// be. It must be between 2 and $p + 1$, inclusive.
-pub struct Bose<T>
-where
-    T: NumCast + Integer + Copy,
+pub struct Bose<T: OAInteger>
 {
     /// The strength of the orthogonal array. It *must* be a prime number.
     pub prime_base: T,
@@ -33,9 +31,7 @@ where
     pub dimensions: T,
 }
 
-impl<T> Bose<T>
-where
-    T: NumCast + Integer + Copy,
+impl<T: OAInteger> Bose<T>
 {
     /// Verify the parameters for Bose construction and return whether they
     /// are valid.
@@ -53,9 +49,7 @@ where
     }
 }
 
-impl<T> OAConstructor<T> for Bose<T>
-where
-    T: NumCast + Integer + Copy,
+impl<T: OAInteger> OAConstructor<T> for Bose<T>
 {
     fn gen(&self) -> OAResult<T> {
         if !self.verify_params() {
@@ -92,10 +86,8 @@ where
     }
 }
 
-impl<T> ParOAConstructor<T> for Bose<T>
-where
-    T: NumCast + Integer + Copy,
-{
+#[cfg(features = "parallel")]
+impl<T: OAInteger> ParOAConstructor<T> for Bose<T> {
     fn gen_par(&self) -> OAResult<T> {
         if !self.verify_params() {
             return Err(OAConstructionError::new(
