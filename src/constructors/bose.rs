@@ -1,8 +1,8 @@
 use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, OA};
-use ndarray::{Array2, Axis};
 use crate::utils::OAInteger;
-use primes::is_prime;
+use ndarray::{Array2, Axis};
 use num::pow;
+use primes::is_prime;
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
@@ -22,8 +22,7 @@ use crate::oa::ParOAConstructor;
 ///
 /// `dimensions` determines how many dimensions the resulting point set will
 /// be. It must be between 2 and $p + 1$, inclusive.
-pub struct Bose<T: OAInteger>
-{
+pub struct Bose<T: OAInteger> {
     /// The strength of the orthogonal array. It *must* be a prime number.
     pub prime_base: T,
 
@@ -31,8 +30,7 @@ pub struct Bose<T: OAInteger>
     pub dimensions: T,
 }
 
-impl<T: OAInteger> Bose<T>
-{
+impl<T: OAInteger> Bose<T> {
     /// Verify the parameters for Bose construction and return whether they
     /// are valid.
     fn verify_params(&self) -> bool {
@@ -49,8 +47,7 @@ impl<T: OAInteger> Bose<T>
     }
 }
 
-impl<T: OAInteger> OAConstructor<T> for Bose<T>
-{
+impl<T: OAInteger> OAConstructor<T> for Bose<T> {
     fn gen(&self) -> OAResult<T> {
         if !self.verify_params() {
             return Err(OAConstructionError::new(
