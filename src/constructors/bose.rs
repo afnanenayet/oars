@@ -83,7 +83,7 @@ impl<T: OAInteger> OAConstructor<T> for Bose<T> {
     }
 }
 
-#[cfg(features = "parallel")]
+#[cfg(feature = "parallel")]
 impl<T: OAInteger> ParOAConstructor<T> for Bose<T> {
     fn gen_par(&self) -> OAResult<T> {
         if !self.verify_params() {
@@ -100,7 +100,7 @@ impl<T: OAInteger> ParOAConstructor<T> for Bose<T> {
         // these dims
         points
             .axis_iter_mut(Axis(0))
-            .into_par_iter()
+            .par_iter_mut()
             .enumerate()
             .map(|(row_idx, row)| {
                 row.par_iter_mut()
@@ -202,5 +202,4 @@ mod tests {
         println!("{:?}", oa.points);
         assert!(oa.points == ground_truth);
     }
-
 }
