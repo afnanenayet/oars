@@ -5,7 +5,11 @@ authors = ["Afnan Enayet <afnan@afnan.io>"]
 edition = "2018"
 readme = "docs/readme.md"
 keywords = ["math", "orthogonal", "arrays", "monte", "carlo"]
+maintenance = { status = "actively-maintained" }
 license = "MIT"
+
+[badges]
+travis-ci = { "afnanenayet/oars", branch = "master" }
 
 [dependencies]
 rand = "0.6.5"
