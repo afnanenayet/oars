@@ -165,9 +165,7 @@ pub fn normalize<T: OAInteger, U: OAFloat>(oa: &OA<T>, jitter: U, randomize: boo
 /// selection of $t$ columns, every possible combination of $t$-tuples must be present in that
 /// submatrix. You can easily map the combinations in a unique way using base $s$ where $s$ is
 /// the number of factors in the array (assuming it is a symmetrical array).
-pub fn verify<T: OAInteger>(oa: &OA<T>) -> bool
-where
-{
+pub fn verify<T: OAInteger>(oa: &OA<T>) -> bool {
     if oa.points.ndim() != 2 {
         return false;
     }
