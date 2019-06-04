@@ -246,6 +246,25 @@ mod tests {
             points: ground_truth,
         };
         assert!(verify(&soa));
+
+        // Taken from "A Characterization of Strong Orthogonal Arrays of Strength 3" (He and Tang,
+        // 2014).
+        let ground_truth = array![
+            [0, 0, 0],
+            [2, 3, 6],
+            [3, 6, 2],
+            [1, 5, 4],
+            [6, 2, 3],
+            [4, 1, 5],
+            [5, 4, 1],
+            [7, 7, 7],
+        ];
+        let soa = SOA {
+            strength: 3,
+            base: 2,
+            points: ground_truth,
+        };
+        assert!(verify(&soa));
     }
 
     #[test]
