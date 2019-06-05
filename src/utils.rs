@@ -1,4 +1,4 @@
-//! Misc utilities and convenience functions for the crate
+//! Misc utilities and convenience functions for the library
 
 use num::{Float, Integer, NumCast, ToPrimitive};
 use std::vec::Vec;
