@@ -1,6 +1,6 @@
 //! Misc utilities and convenience functions for the library
 
-use num::{self, NumCast, ToPrimitive};
+use num::{self, NumCast};
 use std::vec::Vec;
 
 /// A generic integer type that is compatible with the orthogonal array and strong orthogonal array

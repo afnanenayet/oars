@@ -1,5 +1,5 @@
 use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, OA};
-use ndarray::{Array2, Axis};
+use ndarray::Array2;
 use num::pow;
 use primes::is_prime;
 use crate::utils::Integer;
