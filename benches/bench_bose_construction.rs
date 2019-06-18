@@ -43,9 +43,31 @@ fn bench_bose_large_par(c: &mut Criterion) {
     });
 }
 
+fn bench_bose_xlarge(c: &mut Criterion) {
+    let bose = Bose {
+        prime_base: 251,
+        dimensions: 250,
+    };
+    c.bench_function("Bose (parallel) (base 251, dims 250)", move |b| {
+        b.iter(|| bose.gen().unwrap())
+    });
+}
+
+fn bench_bose_xlarge_par(c: &mut Criterion) {
+    let bose = Bose {
+        prime_base: 251,
+        dimensions: 250,
+    };
+    c.bench_function("Bose (parallel) (base 251, dims 250)", move |b| {
+        b.iter(|| bose.gen_par().unwrap())
+    });
+}
+
 criterion_group!(benches,
                  bench_bose_small,
                  bench_bose_small_par,
                  bench_bose_large,
-                 bench_bose_large_par);
+                 bench_bose_large_par,
+                 bench_bose_xlarge,
+                 bench_bose_xlarge_par);
 criterion_main!(benches);
