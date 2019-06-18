@@ -2,6 +2,9 @@
 use oars::constructors::Bush;
 use oars::oa::{normalize, verify, OAConstructor};
 
+#[cfg(feature = "parallel")]
+use oars::oa::ParOAConstructor;
+
 #[test]
 fn test_bush_init_verify() {
     let bush = Bush {
@@ -34,6 +37,42 @@ fn test_bush_init_verify() {
         strength: 4,
     };
     let oa = bush.gen().unwrap();
+    assert!(verify(&oa));
+}
+
+#[test]
+#[cfg(feature = "parallel")]
+fn test_bush_par_init_verify() {
+    let bush = Bush {
+        prime_base: 2,
+        dimensions: 2,
+        strength: 2,
+    };
+    let oa = bush.gen_par().unwrap();
+    assert!(verify(&oa));
+
+    let bush = Bush {
+        prime_base: 3,
+        dimensions: 2,
+        strength: 2,
+    };
+    let oa = bush.gen_par().unwrap();
+    assert!(verify(&oa));
+
+    let bush = Bush {
+        prime_base: 3,
+        dimensions: 3,
+        strength: 3,
+    };
+    let oa = bush.gen_par().unwrap();
+    assert!(verify(&oa));
+
+    let bush = Bush {
+        prime_base: 5,
+        dimensions: 4,
+        strength: 4,
+    };
+    let oa = bush.gen_par().unwrap();
     assert!(verify(&oa));
 }
 

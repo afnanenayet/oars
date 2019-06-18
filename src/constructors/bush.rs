@@ -5,6 +5,16 @@ use num::pow::pow;
 use primes::is_prime;
 use std::cmp::min;
 
+#[cfg(feature = "parallel")]
+use crate::oa::ParOAConstructor;
+
+#[cfg(feature = "parallel")]
+use ndarray::{Axis, stack};
+
+
+#[cfg(feature = "parallel")]
+use ndarray_parallel::prelude::*;
+
 /// Generate an orthogonal array with any prime base and a strength between 2 and p + 1
 ///
 /// The Bush construction technique, as described by Art Owen in his currently unpublished Monte
@@ -82,6 +92,77 @@ impl<T: Integer> OAConstructor<T> for Bush<T> {
     }
 }
 
+#[cfg(feature = "parallel")]
+impl<T: Integer> ParOAConstructor<T> for Bush<T> {
+    fn gen_par(&self) -> OAResult<T> {
+        if !self.verify_params() {
+            return Err(OAConstructionError::new(
+                OACErrorKind::InvalidParams,
+                "Invalid parameters",
+            ));
+        }
+        let n = pow(self.prime_base, self.strength.to_usize().unwrap());
+
+
+        let mut initial_points =
+            Array2::<T>::zeros((n.to_usize().unwrap(), min(self.dimensions.to_usize().unwrap(),
+                                self.prime_base.to_usize().unwrap())));
+
+        initial_points
+            .axis_iter_mut(Axis(0))
+            .into_par_iter()
+            .enumerate()
+            .for_each(|(row_idx, mut row)| {
+                let coeffs = to_base_fixed(T::from(row_idx).unwrap(), self.prime_base, self.strength);
+                row
+                    .axis_iter_mut(Axis(0))
+                    .into_par_iter()
+                    .enumerate()
+                    .for_each(|(col_idx, mut col)| {
+                        col[[col_idx; 0]] = poly_eval(&coeffs, T::from(col_idx).unwrap()) % self.prime_base;
+                    })
+                });
+
+        // There is a special case for the last column if it is equal to prime_base + 1, which is
+        // documented by Art Owen. We take care of this special case here, because otherwise it's
+        // an unnecessary calculation.
+        if self.dimensions == self.prime_base + T::from(1).unwrap() {
+            let mut last_col = Array2::<T>::zeros((n.to_usize().unwrap(), 1));
+
+            last_col
+                .axis_iter_mut(Axis(0))
+                .into_par_iter()
+                .enumerate()
+                .for_each(|(row_idx, mut row)| {
+                    row
+                        .axis_iter_mut(Axis(0))
+                        .into_par_iter()
+                        .enumerate()
+                        .for_each(|(_, mut col)| {
+                            col[[0 as usize; 0]] = T::from(row_idx - 1).unwrap() % self.prime_base;
+                        })
+                });
+            let points = stack![Axis(1), initial_points, last_col];
+
+            return Ok(OA {
+                strength: self.strength,
+                levels: self.prime_base,
+                index: T::from(1).unwrap(),
+                factors: self.dimensions,
+                points,
+            })
+        }
+
+        Ok(OA {
+            strength: self.strength,
+            levels: self.prime_base,
+            index: T::from(1).unwrap(),
+            factors: self.dimensions,
+            points: initial_points,
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -109,5 +190,30 @@ mod tests {
             dimensions: 3,
         };
         assert!(bush.gen().is_err());
+    }
+
+    #[test]
+    #[cfg(feature = "parallel")]
+    fn bush_par_non_prime() {
+        let bush = Bush {
+            strength: 2,
+            prime_base: 4,
+            dimensions: 3,
+        };
+        assert!(bush.gen_par().is_err());
+
+        let bush = Bush {
+            strength: 2,
+            prime_base: 9,
+            dimensions: 3,
+        };
+        assert!(bush.gen_par().is_err());
+
+        let bush = Bush {
+            strength: 2,
+            prime_base: 100,
+            dimensions: 3,
+        };
+        assert!(bush.gen_par().is_err());
     }
 }
