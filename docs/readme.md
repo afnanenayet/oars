@@ -56,7 +56,7 @@ dependency as such:
 
 ```toml
 [dependencies.oars]
-version = "0.3"
+version = "0.4"
 features = ["serialize"]
 ```
 
