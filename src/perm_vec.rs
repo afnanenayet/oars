@@ -3,6 +3,7 @@
 
 use rand;
 use rand::seq::SliceRandom;
+use std::ops::Index;
 
 /// This is a vector containing the elements ${0, 1 \cdots n - 1}$, shuffled
 /// around to easily allow for a user to create a permutation.
@@ -10,8 +11,6 @@ use rand::seq::SliceRandom;
 /// For example: `a[0]`, if `a` is shuffled, corresponds to another element.
 /// This allows you to perform an O(1) permutation as long as `a` has been
 /// shuffled.
-use std::ops::Index;
-
 #[derive(Debug)]
 pub struct PermutationVector {
     /// The internal array containing the shuffled elements.

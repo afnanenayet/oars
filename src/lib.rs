@@ -21,7 +21,7 @@
 //! ```
 //! use oars::constructors::Bose;
 //! use oars::oa::{OAConstructor, normalize, verify};
-//! use oars::OAInteger;
+//! use oars::Integer;
 //!
 //! // Configure the parameters for the bose construction
 //! let bose = Bose {
@@ -47,4 +47,4 @@ mod utils;
 
 // Export these types because any consumer of this library will need to have these type definitions
 // in order to use the OA/SOA definitions and constructors
-pub use utils::{OAFloat, OAInteger};
+pub use utils::{Float, Integer};

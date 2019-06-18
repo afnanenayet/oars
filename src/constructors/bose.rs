@@ -2,7 +2,7 @@ use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, OA};
 use ndarray::{Array2, Axis};
 use num::pow;
 use primes::is_prime;
-use crate::utils::OAInteger;
+use crate::utils::Integer;
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
@@ -22,7 +22,7 @@ use crate::oa::ParOAConstructor;
 ///
 /// `dimensions` determines how many dimensions the resulting point set will
 /// be. It must be between 2 and $p + 1$, inclusive.
-pub struct Bose<T: OAInteger>
+pub struct Bose<T: Integer>
 {
     /// The strength of the orthogonal array. It *must* be a prime number.
     pub prime_base: T,
@@ -31,7 +31,7 @@ pub struct Bose<T: OAInteger>
     pub dimensions: T,
 }
 
-impl<T: OAInteger> Bose<T>
+impl<T: Integer> Bose<T>
 {
     /// Verify the parameters for Bose construction and return whether they
     /// are valid.
@@ -49,7 +49,7 @@ impl<T: OAInteger> Bose<T>
     }
 }
 
-impl<T: OAInteger> OAConstructor<T> for Bose<T>
+impl<T: Integer> OAConstructor<T> for Bose<T>
 {
     fn gen(&self) -> OAResult<T> {
         if !self.verify_params() {
@@ -87,7 +87,7 @@ impl<T: OAInteger> OAConstructor<T> for Bose<T>
 }
 
 #[cfg(features = "parallel")]
-impl<T: OAInteger> ParOAConstructor<T> for Bose<T> {
+impl<T: Integer> ParOAConstructor<T> for Bose<T> {
     fn gen_par(&self) -> OAResult<T> {
         if !self.verify_params() {
             return Err(OAConstructionError::new(
@@ -190,7 +190,6 @@ mod tests {
             [2, 1, 0],
             [2, 2, 1],
         ]);
-        println!("{:?}", oa.points);
         assert!(oa.points == ground_truth);
     }
 
