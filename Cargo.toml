@@ -23,7 +23,7 @@ ndarray = "0.12.1"
 ndarray-parallel = { version = "0.9", optional = true }
 serde = { version = "1.0", optional = true }
 serde_derive = { version = "1.0", optional = true }
-rayon = { version = "1.0", optional = true }
+rayon = { version = "1.1", optional = true }
 
 [features]
 default = []
