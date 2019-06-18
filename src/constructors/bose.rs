@@ -1,8 +1,8 @@
 use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, OA};
-use ndarray::Array2;
+use crate::utils::Integer;
 use num::pow;
 use primes::is_prime;
-use crate::utils::Integer;
+use ndarray::Array2;
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
@@ -12,6 +12,9 @@ use ndarray_parallel::prelude::*;
 
 #[cfg(feature = "parallel")]
 use crate::oa::ParOAConstructor;
+
+#[cfg(feature = "parallel")]
+use ndarray::{Axis, stack};
 
 /// Generate an orthogonal array with any prime base and a strength of 2
 ///
@@ -83,8 +86,9 @@ impl<T: Integer> OAConstructor<T> for Bose<T> {
     }
 }
 
-#[cfg(features = "parallel")]
-impl<T: Integer> ParOAConstructor<T> for Bose<T> {
+#[cfg(feature = "parallel")]
+impl<T: Integer> ParOAConstructor<T> for Bose<T> 
+{
     fn gen_par(&self) -> OAResult<T> {
         if !self.verify_params() {
             return Err(OAConstructionError::new(
@@ -93,36 +97,50 @@ impl<T: Integer> ParOAConstructor<T> for Bose<T> {
             ));
         }
         let n = pow(self.prime_base, 2);
+
+        // We create two different arrays: the first two columns and the rest, because the latter
+        // is dependent on the first, so each array is constructed in parallel and then
+        // concatenated
+        let mut initial_points =
+            Array2::<T>::zeros((n.to_usize().unwrap(), 2));
         let mut points =
-            Array2::<T>::zeros((n.to_usize().unwrap(), self.dimensions.to_usize().unwrap()));
+            Array2::<T>::zeros((n.to_usize().unwrap(), self.dimensions.to_usize().unwrap() - 2));
 
         // Initialize the first two dimensions first, since all subsequent dimensions depend on the
         // these dims
-        points
-            .axis_iter_mut(Axis(0))
-            .par_iter_mut()
+        initial_points
+            .axis_iter_mut(Axis(1))
+            .into_par_iter()
             .enumerate()
-            .map(|(row_idx, row)| {
-                row.par_iter_mut()
-                    .take(2)
-                    .enumerate(|(col_idx, val)| match col_idx {
-                        0 => T::from(row_idx).unwrap() / self.prime_base,
-                        1 => T::from(row_idx).unwrap() % self.prime_base,
+            .for_each(|(col_idx, mut col)| {
+                col.axis_iter_mut(Axis(0))
+                    .into_par_iter()
+                    .enumerate()
+                    .for_each(|(row_idx, mut row)| match col_idx {
+                        0 => row[[row_idx; 0]] = T::from(row_idx).unwrap() / self.prime_base,
+                        1 => row[[row_idx; 0]] = T::from(row_idx).unwrap() % self.prime_base,
+                        _ => panic!("A column besides 0 or 1 was reached, which is impossible"),
                     })
             });
 
         // every remaining point can be calculated independently, so we separate them out into a
         // different threadpool
         points
-            .axis_iter(Axis(0))
-            .par_iter_mut()
-            .enumerate(|(row_idx, row)| {
-                row.par_iter_mut().skip(2).enumerate(|(col_idx, val)| {
-                    points[[row_idx, 0]]
-                        + T::from(col_idx - 1).unwrap() * points[[row_idx as usize, 1]]
-                            % self.prime_base
-                })
+            .axis_iter_mut(Axis(1))
+            .into_par_iter()
+            .enumerate()
+            .skip(2)
+            .for_each(|(col_idx, mut col)| {
+                col.axis_iter_mut(Axis(0))
+                    .into_par_iter()
+                    .enumerate()
+                    .for_each(|(row_idx, mut row)| {
+                        row[[row_idx; 0]] = initial_points[[row_idx, 0]]
+                            + T::from(col_idx - 1).unwrap() * initial_points[[row_idx as usize, 1]]
+                            % self.prime_base;
+                    })
             });
+        let points = stack![Axis(1), initial_points, points];
         Ok(OA {
             strength: T::from(2).unwrap(),
             levels: self.prime_base,
@@ -189,15 +207,15 @@ mod tests {
         };
         let oa = bose.gen().unwrap();
         let ground_truth = arr2(&[
-            [0, 0, 0],
-            [0, 1, 1],
-            [0, 2, 2],
-            [1, 0, 1],
-            [1, 1, 2],
-            [1, 2, 0],
-            [2, 0, 2],
-            [2, 1, 0],
-            [2, 2, 1],
+                                [0, 0, 0],
+                                [0, 1, 1],
+                                [0, 2, 2],
+                                [1, 0, 1],
+                                [1, 1, 2],
+                                [1, 2, 0],
+                                [2, 0, 2],
+                                [2, 1, 0],
+                                [2, 2, 1],
         ]);
         assert!(oa.points == ground_truth);
     }

@@ -30,16 +30,35 @@ impl<T> OAFloat for T where T: NumCast + num::Float + Copy {}
 /// A generic integer type that is compatible with the orthogonal array and strong orthogonal array
 /// definitions in the library. Almost every type that is compatible with `num::Integer` from the
 /// num-traits crate should be compatible with this integer type.
+#[cfg(not(feature = "parallel"))]
 pub trait Integer: NumCast + num::Integer + Copy {}
+
+#[cfg(not(feature = "parallel"))]
 impl<T> Integer for T where T: NumCast + num::Integer + Copy {}
+
+
+#[cfg(feature = "parallel")]
+pub trait Integer: NumCast + num::Integer + Copy + std::marker::Send + Sync {}
+
+#[cfg(feature = "parallel")]
+impl<T> Integer for T where T: NumCast + num::Integer + Copy + std::marker::Send + Sync {}
 
 /// A generic floating point type.
 ///
 /// A generic float type that is compatible with the orthogonal array and strong orthogonal array
 /// definitions in the library. Almost every type that is compatible with `num::Float` from the
 /// num-traits crate should be compatible with this float type.
+#[cfg(not(feature = "parallel"))]
 pub trait Float: NumCast + num::Float + Copy {}
+
+#[cfg(not(feature = "parallel"))]
 impl<T> Float for T where T: NumCast + num::Float + Copy {}
+
+#[cfg(feature = "parallel")]
+pub trait Float: NumCast + num::Float + Copy + std::marker::Send + Sync {}
+
+#[cfg(feature = "parallel")]
+impl<T> Float for T where T: NumCast + num::Float + Copy + std::marker::Send + Sync {}
 
 /// Convert a number to an arbitrary base with a fixed number of digits
 ///
