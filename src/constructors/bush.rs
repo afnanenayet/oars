@@ -9,8 +9,7 @@ use std::cmp::min;
 use crate::oa::ParOAConstructor;
 
 #[cfg(feature = "parallel")]
-use ndarray::{Axis, stack};
-
+use ndarray::{stack, Axis};
 
 #[cfg(feature = "parallel")]
 use ndarray_parallel::prelude::*;
@@ -103,25 +102,29 @@ impl<T: Integer> ParOAConstructor<T> for Bush<T> {
         }
         let n = pow(self.prime_base, self.strength.to_usize().unwrap());
 
-
-        let mut initial_points =
-            Array2::<T>::zeros((n.to_usize().unwrap(), min(self.dimensions.to_usize().unwrap(),
-                                self.prime_base.to_usize().unwrap())));
+        let mut initial_points = Array2::<T>::zeros((
+            n.to_usize().unwrap(),
+            min(
+                self.dimensions.to_usize().unwrap(),
+                self.prime_base.to_usize().unwrap(),
+            ),
+        ));
 
         initial_points
             .axis_iter_mut(Axis(0))
             .into_par_iter()
             .enumerate()
             .for_each(|(row_idx, mut row)| {
-                let coeffs = to_base_fixed(T::from(row_idx).unwrap(), self.prime_base, self.strength);
-                row
-                    .axis_iter_mut(Axis(0))
+                let coeffs =
+                    to_base_fixed(T::from(row_idx).unwrap(), self.prime_base, self.strength);
+                row.axis_iter_mut(Axis(0))
                     .into_par_iter()
                     .enumerate()
                     .for_each(|(col_idx, mut col)| {
-                        col[[col_idx; 0]] = poly_eval(&coeffs, T::from(col_idx).unwrap()) % self.prime_base;
+                        col[[col_idx; 0]] =
+                            poly_eval(&coeffs, T::from(col_idx).unwrap()) % self.prime_base;
                     })
-                });
+            });
 
         // There is a special case for the last column if it is equal to prime_base + 1, which is
         // documented by Art Owen. We take care of this special case here, because otherwise it's
@@ -134,8 +137,7 @@ impl<T: Integer> ParOAConstructor<T> for Bush<T> {
                 .into_par_iter()
                 .enumerate()
                 .for_each(|(row_idx, mut row)| {
-                    row
-                        .axis_iter_mut(Axis(0))
+                    row.axis_iter_mut(Axis(0))
                         .into_par_iter()
                         .enumerate()
                         .for_each(|(_, mut col)| {
@@ -150,7 +152,7 @@ impl<T: Integer> ParOAConstructor<T> for Bush<T> {
                 index: T::from(1).unwrap(),
                 factors: self.dimensions,
                 points,
-            })
+            });
         }
 
         Ok(OA {

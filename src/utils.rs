@@ -36,7 +36,6 @@ pub trait Integer: NumCast + num::Integer + Copy {}
 #[cfg(not(feature = "parallel"))]
 impl<T> Integer for T where T: NumCast + num::Integer + Copy {}
 
-
 #[cfg(feature = "parallel")]
 pub trait Integer: NumCast + num::Integer + Copy + std::marker::Send + Sync {}
 

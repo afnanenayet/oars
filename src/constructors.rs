@@ -1,13 +1,15 @@
-//! Various constructors that implement the `OAConstructor` trait, and provide
-//! methods to generate orthogonal arrays. Each struct contains the
-//! configuration parameters necessary for the construction method, and the
-//! `gen` method (from the trait) will construct an orthogonal array from the
-//! given parameters.
+//! Implementations of different orthogonal array construction techniques
 //!
-//! The description of the construction method will be with the struct that contains
-//! the parameters.
+//! Various constructors that implement the `OAConstructor`/`ParOAConstructor` traits, and provide
+//! methods to generate orthogonal arrays. Each struct contains the configuration parameters
+//! necessary for the construction method, and the `gen` method (from the trait) will construct an
+//! orthogonal array from the given parameters.
+//!
+//! The description of the construction method is the struct that contains the parameters for that
+//! particular method.
 
-// We declare each constructor in their own file to avoid maintaining a massive file
+// We declare each constructor in their own file to avoid maintaining a massive file of
+// constructors
 mod bose;
 mod bush;
 

@@ -63,11 +63,13 @@ fn bench_bose_xlarge_par(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches,
-                 bench_bose_small,
-                 bench_bose_small_par,
-                 bench_bose_large,
-                 bench_bose_large_par,
-                 bench_bose_xlarge,
-                 bench_bose_xlarge_par);
+criterion_group!(
+    benches,
+    bench_bose_small,
+    bench_bose_small_par,
+    bench_bose_large,
+    bench_bose_large_par,
+    bench_bose_xlarge,
+    bench_bose_xlarge_par
+);
 criterion_main!(benches);

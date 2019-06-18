@@ -1,8 +1,8 @@
 use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, OA};
 use crate::utils::Integer;
+use ndarray::Array2;
 use num::pow;
 use primes::is_prime;
-use ndarray::Array2;
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
@@ -14,7 +14,7 @@ use ndarray_parallel::prelude::*;
 use crate::oa::ParOAConstructor;
 
 #[cfg(feature = "parallel")]
-use ndarray::{Axis, stack};
+use ndarray::{stack, Axis};
 
 /// Generate an orthogonal array with any prime base and a strength of 2
 ///
@@ -87,8 +87,7 @@ impl<T: Integer> OAConstructor<T> for Bose<T> {
 }
 
 #[cfg(feature = "parallel")]
-impl<T: Integer> ParOAConstructor<T> for Bose<T>
-{
+impl<T: Integer> ParOAConstructor<T> for Bose<T> {
     fn gen_par(&self) -> OAResult<T> {
         if !self.verify_params() {
             return Err(OAConstructionError::new(
@@ -101,10 +100,11 @@ impl<T: Integer> ParOAConstructor<T> for Bose<T>
         // We create two different arrays: the first two columns and the rest, because the latter
         // is dependent on the first, so each array is constructed in parallel and then
         // concatenated
-        let mut initial_points =
-            Array2::<T>::zeros((n.to_usize().unwrap(), 2));
-        let mut points =
-            Array2::<T>::zeros((n.to_usize().unwrap(), self.dimensions.to_usize().unwrap() - 2));
+        let mut initial_points = Array2::<T>::zeros((n.to_usize().unwrap(), 2));
+        let mut points = Array2::<T>::zeros((
+            n.to_usize().unwrap(),
+            self.dimensions.to_usize().unwrap() - 2,
+        ));
 
         // Initialize the first two dimensions first, since all subsequent dimensions depend on the
         // these dims
@@ -250,15 +250,15 @@ mod tests {
         };
         let oa = bose.gen().unwrap();
         let ground_truth = arr2(&[
-                                [0, 0, 0],
-                                [0, 1, 1],
-                                [0, 2, 2],
-                                [1, 0, 1],
-                                [1, 1, 2],
-                                [1, 2, 0],
-                                [2, 0, 2],
-                                [2, 1, 0],
-                                [2, 2, 1],
+            [0, 0, 0],
+            [0, 1, 1],
+            [0, 2, 2],
+            [1, 0, 1],
+            [1, 1, 2],
+            [1, 2, 0],
+            [2, 0, 2],
+            [2, 1, 0],
+            [2, 2, 1],
         ]);
         assert!(oa.points == ground_truth);
     }
