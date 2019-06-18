@@ -1,4 +1,4 @@
-# oa-rs
+# oars
 
 [![Build Status](https://travis-ci.com/afnanenayet/oars.svg?token=QtxzrX3Qc2BDQfwx8D1K&branch=master)](https://travis-ci.com/afnanenayet/oars)
 [![crates badge](https://meritbadge.herokuapp.com/oars)](https://crates.io/crates/oars)
