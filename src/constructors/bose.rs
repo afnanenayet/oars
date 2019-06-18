@@ -87,7 +87,7 @@ impl<T: Integer> OAConstructor<T> for Bose<T> {
 }
 
 #[cfg(feature = "parallel")]
-impl<T: Integer> ParOAConstructor<T> for Bose<T> 
+impl<T: Integer> ParOAConstructor<T> for Bose<T>
 {
     fn gen_par(&self) -> OAResult<T> {
         if !self.verify_params() {
@@ -129,14 +129,13 @@ impl<T: Integer> ParOAConstructor<T> for Bose<T>
             .axis_iter_mut(Axis(1))
             .into_par_iter()
             .enumerate()
-            .skip(2)
             .for_each(|(col_idx, mut col)| {
                 col.axis_iter_mut(Axis(0))
                     .into_par_iter()
                     .enumerate()
                     .for_each(|(row_idx, mut row)| {
-                        row[[row_idx; 0]] = initial_points[[row_idx, 0]]
-                            + T::from(col_idx - 1).unwrap() * initial_points[[row_idx as usize, 1]]
+                        row[[row_idx; 0]] = (initial_points[[row_idx, 0]]
+                            + T::from(col_idx + 1).unwrap() * initial_points[[row_idx, 1]])
                             % self.prime_base;
                     })
             });
