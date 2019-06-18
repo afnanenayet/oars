@@ -39,8 +39,6 @@ cargo build
 cargo build --release
 ```
 
-This will also be available at https://crates.io.
-
 ### Usage
 
 You can use this library with your Rust project via cargo. It targets the
