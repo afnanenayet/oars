@@ -1,5 +1,8 @@
-//! The generic interface to define an orthogonal array and generic construction methods. This
-//! module also defines a few construction methods.
+//! Generic interfaces and definitions for orthogonal arrays (OAs).
+//!
+//! The generic interface to define an OA and generic construction methods. This module also
+//! defines traits for serial and parallel OA construction, which are utilized by OA constructors
+//! and can be extended by users to define new OA construction methods.
 
 use crate::perm_vec::PermutationVector;
 use itertools::Itertools;

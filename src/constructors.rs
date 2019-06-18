@@ -1,4 +1,4 @@
-//! Implementations of different orthogonal array construction techniques
+//! Implementations of different orthogonal array construction techniques.
 //!
 //! Various constructors that implement the `OAConstructor`/`ParOAConstructor` traits, and provide
 //! methods to generate orthogonal arrays. Each struct contains the configuration parameters

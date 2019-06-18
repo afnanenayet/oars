@@ -8,9 +8,14 @@
 //! an orthogonal array. The structs generally take the parameters necessary for configuring the
 //! construction method.
 //!
+//! There is also a `ParOAConstructor` trait which demarcates whether a struct has a method that
+//! can construct an orthogonal array utilizing parallelization. In order to use this trait, you
+//! must enable the `parallel` feature for the crate.
+//!
 //! There are also general methods available to verify that a point set matches up with the
 //! orthogonal array parameters, and convert points from an orthogonal array to a point set
-//! and back.
+//! and back. These verification utilities are also provided for strong orthogonal arrays, though
+//! this crate does not yet provide an efficient constructor for strong orthogonal arrays.
 //!
 //! Many of the techniques used in this library were either taken from or inspired by Art Owen's
 //! currently unpublished book about Monte Carlo integration. This library was also developed
