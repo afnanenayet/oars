@@ -7,7 +7,7 @@ use ndarray::Array2;
 use num::{pow, ToPrimitive};
 use rand::prelude::*;
 
-use crate::utils::{OAFloat, OAInteger};
+use crate::utils::{Float, Integer};
 #[cfg(feature = "serialize")]
 use serde_derive::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -17,7 +17,7 @@ use std::fmt;
 /// The definition of an orthogonal array with its point set and parameters.
 #[derive(Debug)]
 #[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
-pub struct OA<T: OAInteger> {
+pub struct OA<T: Integer> {
     /// The size of the set `X` that the array can select elements from.
     pub levels: T,
 
@@ -41,7 +41,7 @@ pub struct OA<T: OAInteger> {
 /// Prints the metadata of the orthogonal array, then prints the contents of the array
 impl<T> fmt::Display for OA<T>
 where
-    T: fmt::Display + OAInteger,
+    T: fmt::Display + Integer,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
@@ -111,7 +111,7 @@ impl OAConstructionError {
 /// Args:
 ///     - jitter: The factor between 0 and 1 to jitter by, within each strata
 ///     - randomize: Whether the orthogonal array should be randomly shuffled when generating points
-pub fn normalize<T: OAInteger, U: OAFloat>(oa: &OA<T>, jitter: U, randomize: bool) -> Array2<U> {
+pub fn normalize<T: Integer, U: Float>(oa: &OA<T>, jitter: U, randomize: bool) -> Array2<U> {
     if oa.points.ndim() != 2 {
         panic!("Orthogonal array must be in a 2D matrix form");
     }
@@ -165,7 +165,9 @@ pub fn normalize<T: OAInteger, U: OAFloat>(oa: &OA<T>, jitter: U, randomize: boo
 /// selection of $t$ columns, every possible combination of $t$-tuples must be present in that
 /// submatrix. You can easily map the combinations in a unique way using base $s$ where $s$ is
 /// the number of factors in the array (assuming it is a symmetrical array).
-pub fn verify<T: OAInteger>(oa: &OA<T>) -> bool {
+pub fn verify<T: Integer>(oa: &OA<T>) -> bool
+where
+{
     if oa.points.ndim() != 2 {
         return false;
     }
@@ -212,14 +214,14 @@ pub fn verify<T: OAInteger>(oa: &OA<T>) -> bool {
 }
 
 /// A generic trait to demarcate orthogonal array constructors
-pub trait OAConstructor<T: OAInteger> {
+pub trait OAConstructor<T: Integer> {
     /// The method that generates an orthogonal array. Any necessary parameters must be handled
     /// by the constructor itself.
     fn gen(&self) -> OAResult<T>;
 }
 
 /// A generic trait that demarcates a parallelized orthogonal array constructor.
-pub trait ParOAConstructor<T: OAInteger> {
+pub trait ParOAConstructor<T: Integer> {
     /// Generate an orthogonal array utilizing multithreading. Any necessary parameters must be
     /// handled by the constructor itself.
     fn gen_par(&self) -> OAResult<T>;

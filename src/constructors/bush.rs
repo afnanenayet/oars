@@ -1,5 +1,5 @@
 use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, OA};
-use crate::utils::{poly_eval, to_base_fixed, OAInteger};
+use crate::utils::{poly_eval, to_base_fixed, Integer};
 use ndarray::Array2;
 use num::pow::pow;
 use primes::is_prime;
@@ -9,7 +9,7 @@ use std::cmp::min;
 ///
 /// The Bush construction technique, as described by Art Owen in his currently unpublished Monte
 /// Carlo textbook. In Chapter 10.4, he describes the Bush construction technique.
-pub struct Bush<T: OAInteger> {
+pub struct Bush<T: Integer> {
     /// The strength of the orthogonal array. It *must* be a prime number.
     pub prime_base: T,
 
@@ -21,7 +21,7 @@ pub struct Bush<T: OAInteger> {
     pub dimensions: T,
 }
 
-impl<T: OAInteger> Bush<T> {
+impl<T: Integer> Bush<T> {
     /// Verify the parameters for Bush construction. This checks to see whether the prime base
     /// is valid and returns whether the parameters are correct.
     ///
@@ -45,7 +45,7 @@ impl<T: OAInteger> Bush<T> {
     }
 }
 
-impl<T: OAInteger> OAConstructor<T> for Bush<T> {
+impl<T: Integer> OAConstructor<T> for Bush<T> {
     fn gen(&self) -> OAResult<T> {
         if !self.verify_params() {
             return Err(OAConstructionError::new(

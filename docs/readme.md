@@ -1,7 +1,9 @@
-# oa-rs
+# oars
 
 [![Build Status](https://travis-ci.com/afnanenayet/oars.svg?token=QtxzrX3Qc2BDQfwx8D1K&branch=master)](https://travis-ci.com/afnanenayet/oars)
-
+[![crates badge](https://meritbadge.herokuapp.com/oars)](https://crates.io/crates/oars)
+[![Documentation](https://docs.rs/oars/badge.svg)](https://docs.rs/oars)
+![License](https://img.shields.io/crates/l/oars/0.3.1.svg)
 
 ## Summary
 
@@ -37,8 +39,6 @@ cargo build
 cargo build --release
 ```
 
-This will also be available at https://crates.io.
-
 ### Usage
 
 You can use this library with your Rust project via cargo. It targets the
@@ -56,7 +56,7 @@ dependency as such:
 
 ```toml
 [dependencies.oars]
-version = "0.2.0"
+version = "0.3"
 features = ["serialize"]
 ```
 

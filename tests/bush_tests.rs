@@ -10,7 +10,6 @@ fn test_bush_init_verify() {
         strength: 2,
     };
     let oa = bush.gen().unwrap();
-    println!("oa\n{:?}", oa.points);
     assert!(verify(&oa));
 
     let bush = Bush {
