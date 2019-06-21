@@ -2,9 +2,9 @@
 //!
 //! Note that this module does not export structs for specific constructors.
 
+pub use crate::oa::{OAConstructionError, OAConstructor, OAResult, OA};
+pub use crate::soa::{SOAConstructionError, SOAConstructor, SOAResult, SOA};
 pub use crate::utils::{Float, Integer};
-pub use crate::oa::{OAConstructor, OA, OAResult, OAConstructionError};
-pub use crate::soa::{SOA, SOAConstructor, SOAResult, SOAConstructionError};
 
 #[cfg(feature = "parallel")]
-pub use create::oa::{ParOAConstructor};
+pub use create::oa::ParOAConstructor;

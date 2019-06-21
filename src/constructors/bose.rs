@@ -16,7 +16,6 @@ use crate::oa::ParOAConstructor;
 #[cfg(feature = "parallel")]
 use ndarray::{stack, Axis};
 
-
 /// Generate an orthogonal array with a prime base of strength 2, with parameter checking.
 ///
 /// This struct offers parameter checking to ensure that there is no undefined behavior when
@@ -47,7 +46,7 @@ impl<T: Integer> BoseChecked<T> {
     /// };
     ///
     /// // On success, the BoseChecked struct is consumed and replaced with a Bose struct that is
-    /// // ready to generate an OA 
+    /// // ready to generate an OA
     /// let oa = bose.verify()?.gen();
     /// # Ok(())
     /// # }
@@ -58,14 +57,14 @@ impl<T: Integer> BoseChecked<T> {
         {
             return Err(OAConstructionError::new(
                 OACErrorKind::InvalidParams,
-                "Invalid dimensions"
+                "Invalid dimensions",
             ));
         }
 
         if !is_prime(self.prime_base.to_u64().unwrap()) {
             return Err(OAConstructionError::new(
                 OACErrorKind::InvalidParams,
-                "Base is not prime"
+                "Base is not prime",
             ));
         }
         Ok(Bose {
@@ -76,7 +75,7 @@ impl<T: Integer> BoseChecked<T> {
 }
 
 /// Generate an orthogonal array with any prime base and a strength of 2
-/// 
+///
 ///
 /// This technique was described by Art Owen in his Monte Carlo book in Chapter 10.4.
 ///

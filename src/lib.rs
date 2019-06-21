@@ -47,9 +47,9 @@
 pub mod constructors;
 pub mod oa;
 mod perm_vec;
+pub mod prelude;
 pub mod soa;
 mod utils;
-pub mod prelude;
 
 // Export these types because any consumer of this library will need to have these type definitions
 // in order to use the OA/SOA definitions and constructors
