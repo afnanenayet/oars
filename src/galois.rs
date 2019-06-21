@@ -2,11 +2,12 @@
 //! bases of arbitrary powers of 2.
 
 use crate::utils::{poly_eval, to_base_fixed, Integer};
-use num::ToPrimitive;
+use num::{ToPrimitive, pow};
 use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
+use primes::is_prime;
 
 /// An integer polynomial. The degree is the size of the vector.
-struct Polynomial<'a, T: Integer> {
+pub struct Polynomial<'a, T: Integer> {
     /// The vector representing the polynomial
     poly: Vec<T>,
 
@@ -119,7 +120,7 @@ impl<'a, T: Integer> Mul for Polynomial<'a, T> {
             for (idx_b, val_b) in rhs.poly.iter().enumerate() {
                 let new_idx = idx_a + idx_b;
 
-                // can't use adassign because the `num` doesn't implement it
+                // can't use add assign because the `num` doesn't implement it
                 prod[new_idx] = prod[new_idx] + (*val_a * *val_b);
             }
         }
@@ -140,13 +141,77 @@ impl<'a, T: Integer> Mul for Polynomial<'a, T> {
     }
 }
 
+/// Calculate the characteristic polynomial for a field of size 2^power.
+///
+/// This method calculates the "primitive polynomial" for GF(2^power), returning the coefficients
+/// of the polynomial for base 2 interpreted in base 10.
+///
+/// If no such polynomial can be found, this method will return `None`.
+fn prim_poly<T: Integer>(power: T) -> Option<T> {
+    // The polynomial must be of degree `power`
+    let power_raised = pow(2, power.to_usize().unwrap());
+    //let upper_bound = power_raised | (power_raised - 1);
+
+    // Figure out some combination of exponents that adds up to a prime number, that includes
+    // `power`
+    for i in (1..power_raised).rev() {
+        let candidate = power_raised + i;
+        let mut temp_candidate = candidate;
+        let mut power_sum = 0;
+        let mut idx = 0;
+
+        while temp_candidate > 0 {
+            power_sum = (temp_candidate % 2) * idx;
+            idx += 1;
+            temp_candidate /= 2;
+        }
+
+        if is_prime(power_sum.to_u64().unwrap()) {
+            // The reason we add 1 is because the algorithm doesn't factor for the 0 power, which
+            // is 1. We shift the number to the right by multipling by 2, and add 1. This preserves
+            // the sum of the powers, while giving us the proper polynomial.
+            return Some(T::from(candidate).unwrap());
+        }
+    }
+    None
+}
+
 /// A finite field with a characteristic irreducible polynomial in some domain that is a power of
 /// 2.
-struct Field<T: Integer> {
+pub struct Field<T: Integer> {
     /// The coefficients for a primitive polynomial that is a characteristic polynomial for a field
     /// of `size` in base 10.
     prim_poly: T,
 
     /// The size of the domain of the finite field (must be a power of 2)
     size: T,
+}
+
+impl<T: Integer> Field<T> {
+    /// Initialize a field of a particular size
+    ///
+    /// Given the size of a finite field, this method will calculate the primitive polynomial for
+    /// that field. The size must be a power of 2.
+    pub fn new(size: T) -> Self {
+        unimplemented!();
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_prim_poly() {
+        // Test cases taken from:
+        // http://mathworld.wolfram.com/PrimitivePolynomial.html
+        let p = prim_poly(2);
+        assert!(p.unwrap() == 7);
+
+        let p = prim_poly(3);
+        assert!(p.unwrap() == 15);
+
+        let p = prim_poly(4);
+        assert!(p.unwrap() == 17);
+    }
 }
