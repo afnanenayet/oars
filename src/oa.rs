@@ -11,8 +11,10 @@ use num::{pow, ToPrimitive};
 use rand::prelude::*;
 
 use crate::utils::{Float, Integer};
+
 #[cfg(feature = "serialize")]
 use serde_derive::{Deserialize, Serialize};
+
 use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
@@ -49,7 +51,7 @@ where
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "OA:\n\tlevels: {}\n\tstrength: {}\n\tfactors: {}\n\tindex: {}\npoints:\n\n{}\n\n",
+            "OA:\n    levels: {}\n    strength: {}\n    factors: {}\n    index: {}\npoints:\n\n{}\n\n",
             self.levels, self.strength, self.factors, self.index, self.points
         )
     }
@@ -112,8 +114,9 @@ impl OAConstructionError {
 /// and Bush construction._
 ///
 /// Args:
-///     - jitter: The factor between 0 and 1 to jitter by, within each strata
-///     - randomize: Whether the orthogonal array should be randomly shuffled when generating points
+///
+/// - jitter: The factor between 0 and 1 to jitter by, within each strata
+/// - randomize: Whether the orthogonal array should be randomly shuffled when generating points
 pub fn normalize<T: Integer, U: Float>(oa: &OA<T>, jitter: U, randomize: bool) -> Array2<U> {
     if oa.points.ndim() != 2 {
         panic!("Orthogonal array must be in a 2D matrix form");

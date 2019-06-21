@@ -24,9 +24,9 @@
 //! # Example Usage
 //!
 //! ```
+//! use oars::prelude::*;
 //! use oars::constructors::Bose;
-//! use oars::oa::{OAConstructor, normalize, verify};
-//! use oars::Integer;
+//! use oars::oa::{normalize, verify};
 //!
 //! // Configure the parameters for the bose construction
 //! let bose = Bose {
@@ -49,6 +49,7 @@ pub mod oa;
 mod perm_vec;
 pub mod soa;
 mod utils;
+pub mod prelude;
 
 // Export these types because any consumer of this library will need to have these type definitions
 // in order to use the OA/SOA definitions and constructors

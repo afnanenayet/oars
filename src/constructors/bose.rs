@@ -16,7 +16,67 @@ use crate::oa::ParOAConstructor;
 #[cfg(feature = "parallel")]
 use ndarray::{stack, Axis};
 
+
+/// Generate an orthogonal array with a prime base of strength 2, with parameter checking.
+///
+/// This struct offers parameter checking to ensure that there is no undefined behavior when
+/// constructing the orthogonal array.
+pub struct BoseChecked<T: Integer> {
+    /// The strength of the orthogonal array. It *must* be a prime number.
+    pub prime_base: T,
+
+    /// The dimensionality of the orthogonal array
+    pub dimensions: T,
+}
+
+impl<T: Integer> BoseChecked<T> {
+    /// Check the parameters for Bose construction
+    ///
+    /// This method ensures that the parameters for Bose construction are valid. If they are not,
+    /// this will return an error. Upon success, the `BoseChecked` struct is consumed, and a `Bose`
+    /// struct is returned, which implemented the OA generation methods.
+    ///
+    /// ```
+    /// use oars::prelude::*;
+    /// # fn main() -> Result<(), OAConstructionError> {
+    /// use oars::constructors::{BoseChecked, Bose};
+    ///
+    /// let bose = BoseChecked {
+    ///     prime_base: 3,
+    ///     dimensions: 2,
+    /// };
+    ///
+    /// // On success, the BoseChecked struct is consumed and replaced with a Bose struct that is
+    /// // ready to generate an OA 
+    /// let oa = bose.verify()?.gen();
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn verify(self) -> Result<Bose<T>, OAConstructionError> {
+        if self.dimensions < T::from(2).unwrap()
+            || self.dimensions > self.prime_base + T::from(1).unwrap()
+        {
+            return Err(OAConstructionError::new(
+                OACErrorKind::InvalidParams,
+                "Invalid dimensions"
+            ));
+        }
+
+        if !is_prime(self.prime_base.to_u64().unwrap()) {
+            return Err(OAConstructionError::new(
+                OACErrorKind::InvalidParams,
+                "Base is not prime"
+            ));
+        }
+        Ok(Bose {
+            prime_base: self.prime_base,
+            dimensions: self.dimensions,
+        })
+    }
+}
+
 /// Generate an orthogonal array with any prime base and a strength of 2
+/// 
 ///
 /// This technique was described by Art Owen in his Monte Carlo book in Chapter 10.4.
 ///
@@ -25,6 +85,11 @@ use ndarray::{stack, Axis};
 ///
 /// `dimensions` determines how many dimensions the resulting point set will
 /// be. It must be between 2 and $p + 1$, inclusive.
+///
+/// Note that using this struct directly does not offer parameter checking, so the user should be
+/// sure that the supplied parameters are valid. If invalid parameters are supplied, then the
+/// resultant orthogonal array with be malformed and invalid. To utilize parameter checking,
+/// construct a `BoseChecked` struct instead.
 pub struct Bose<T: Integer> {
     /// The strength of the orthogonal array. It *must* be a prime number.
     pub prime_base: T,
@@ -33,31 +98,8 @@ pub struct Bose<T: Integer> {
     pub dimensions: T,
 }
 
-impl<T: Integer> Bose<T> {
-    /// Verify the parameters for Bose construction and return whether they
-    /// are valid.
-    fn verify_params(&self) -> bool {
-        if self.dimensions < T::from(2).unwrap()
-            || self.dimensions > self.prime_base + T::from(1).unwrap()
-        {
-            return false;
-        }
-
-        if !is_prime(self.prime_base.to_u64().unwrap()) {
-            return false;
-        }
-        true
-    }
-}
-
 impl<T: Integer> OAConstructor<T> for Bose<T> {
     fn gen(&self) -> OAResult<T> {
-        if !self.verify_params() {
-            return Err(OAConstructionError::new(
-                OACErrorKind::InvalidParams,
-                "invalid parameters",
-            ));
-        }
         let n = pow(self.prime_base, 2);
         let mut points =
             Array2::<T>::zeros((n.to_usize().unwrap(), self.dimensions.to_usize().unwrap()));
@@ -154,70 +196,6 @@ impl<T: Integer> ParOAConstructor<T> for Bose<T> {
 mod tests {
     use super::*;
     use ndarray::arr2;
-
-    #[test]
-    // Initialize with a non prime
-    fn bose_non_prime() {
-        let bose = Bose {
-            prime_base: 4,
-            dimensions: 4,
-        };
-        assert!(bose.gen().is_err());
-    }
-
-    #[test]
-    #[cfg(feature = "parallel")]
-    fn bose_par_non_prime() {
-        let bose = Bose {
-            prime_base: 4,
-            dimensions: 4,
-        };
-        assert!(bose.gen().is_err());
-    }
-
-    #[test]
-    // Initialize the Bose constructor with bad `dimensions` values
-    fn bose_bad_dims() {
-        let bose = Bose {
-            prime_base: 5,
-            dimensions: 1,
-        };
-        assert!(bose.gen().is_err());
-
-        let bose = Bose {
-            prime_base: 5,
-            dimensions: 7,
-        };
-        assert!(bose.gen().is_err());
-
-        let bose = Bose {
-            prime_base: 13,
-            dimensions: 20,
-        };
-        assert!(bose.gen().is_err());
-    }
-
-    #[test]
-    #[cfg(feature = "parallel")]
-    fn bose_par_bad_dims() {
-        let bose = Bose {
-            prime_base: 5,
-            dimensions: 1,
-        };
-        assert!(bose.gen_par().is_err());
-
-        let bose = Bose {
-            prime_base: 5,
-            dimensions: 7,
-        };
-        assert!(bose.gen_par().is_err());
-
-        let bose = Bose {
-            prime_base: 13,
-            dimensions: 20,
-        };
-        assert!(bose.gen_par().is_err());
-    }
 
     #[test]
     fn bose_init_2() {
