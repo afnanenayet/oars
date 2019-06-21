@@ -45,6 +45,7 @@
 //! ```
 
 pub mod constructors;
+mod galois;
 pub mod oa;
 mod perm_vec;
 pub mod soa;
