@@ -25,23 +25,26 @@
 //!
 //! ```
 //! use oars::prelude::*;
-//! use oars::constructors::Bose;
+//! use oars::constructors::{Bose, BoseChecked};
 //! use oars::oa::{normalize, verify};
-//!
-//! // Configure the parameters for the bose construction
-//! let bose = Bose {
+//! # fn main() -> OarsResult<()> {
+//! // Configure the parameters for the Bose construction, using the checked variant so we can make
+//! // sure that the supplied parameters are valid.
+//! let bose = BoseChecked {
 //!     prime_base: 3,
 //!     dimensions: 3,
 //! };
 //!
 //! // Use the OAConstructor method to generate the orthogonal array
-//! let oa = bose.gen().unwrap();
+//! let oa = bose.verify()?.gen()?;
 //!
 //! // Verify that the orthogonal array is correct according to its parameters
-//! assert!(verify(&oa));
+//! assert!(verify(&oa)?);
 //!
 //! // Convert the orthogonal array into a point set usable for Monte Carlo, without jittering
-//! let points = normalize(&oa, 0.0, true);
+//! let points = normalize(&oa, 0.0, true)?;
+//! # Ok(())
+//! # }
 //! ```
 
 pub mod constructors;

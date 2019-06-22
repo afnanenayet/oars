@@ -25,13 +25,17 @@
 //! use oars::prelude::*;
 //! use oars::constructors::{Bose, BoseChecked};
 //!
+//! # fn main() -> OarsResult<()> {
+//!
 //! // Construct the checked variant
 //! let b = BoseChecked {
 //!     prime_base: 3,
 //!     dimensions: 2,
 //! };
 //!
-//! let oa = b.verify().unwrap().gen();
+//! let oa = b.verify()?.gen();
+//! # Ok(())
+//! # }
 //! ```
 
 // We declare each constructor in their own file to avoid maintaining a massive file of
@@ -43,3 +47,4 @@ mod bush;
 pub use bose::Bose;
 pub use bose::BoseChecked;
 pub use bush::Bush;
+pub use bush::BushChecked;

@@ -13,7 +13,7 @@ fn test_bush_init_verify() {
         strength: 2,
     };
     let oa = bush.gen().unwrap();
-    assert!(verify(&oa));
+    assert!(verify(&oa).unwrap());
 
     let bush = Bush {
         prime_base: 3,
@@ -21,7 +21,7 @@ fn test_bush_init_verify() {
         strength: 2,
     };
     let oa = bush.gen().unwrap();
-    assert!(verify(&oa));
+    assert!(verify(&oa).unwrap());
 
     let bush = Bush {
         prime_base: 3,
@@ -29,7 +29,7 @@ fn test_bush_init_verify() {
         strength: 3,
     };
     let oa = bush.gen().unwrap();
-    assert!(verify(&oa));
+    assert!(verify(&oa).unwrap());
 
     let bush = Bush {
         prime_base: 5,
@@ -37,7 +37,7 @@ fn test_bush_init_verify() {
         strength: 4,
     };
     let oa = bush.gen().unwrap();
-    assert!(verify(&oa));
+    assert!(verify(&oa).unwrap());
 }
 
 #[test]
@@ -49,7 +49,7 @@ fn test_bush_par_init_verify() {
         strength: 2,
     };
     let oa = bush.gen_par().unwrap();
-    assert!(verify(&oa));
+    assert!(verify(&oa).unwrap());
 
     let bush = Bush {
         prime_base: 3,
@@ -57,7 +57,7 @@ fn test_bush_par_init_verify() {
         strength: 2,
     };
     let oa = bush.gen_par().unwrap();
-    assert!(verify(&oa));
+    assert!(verify(&oa).unwrap());
 
     let bush = Bush {
         prime_base: 3,
@@ -65,7 +65,7 @@ fn test_bush_par_init_verify() {
         strength: 3,
     };
     let oa = bush.gen_par().unwrap();
-    assert!(verify(&oa));
+    assert!(verify(&oa).unwrap());
 
     let bush = Bush {
         prime_base: 5,
@@ -73,7 +73,7 @@ fn test_bush_par_init_verify() {
         strength: 4,
     };
     let oa = bush.gen_par().unwrap();
-    assert!(verify(&oa));
+    assert!(verify(&oa).unwrap());
 }
 
 #[test]
@@ -84,8 +84,8 @@ fn test_bush_normalize() {
         strength: 2,
     };
     let oa = bush.gen().unwrap();
-    normalize(&oa, 0.0, true);
-    normalize(&oa, 1.0, true);
+    assert!(normalize(&oa, 0.0, true).is_ok());
+    assert!(normalize(&oa, 1.0, true).is_ok());
 
     let bush = Bush {
         prime_base: 3,
@@ -93,6 +93,6 @@ fn test_bush_normalize() {
         strength: 2,
     };
     let oa = bush.gen().unwrap();
-    normalize(&oa, 0.0, true);
-    normalize(&oa, 1.0, true);
+    assert!(normalize(&oa, 0.0, true).is_ok());
+    assert!(normalize(&oa, 1.0, true).is_ok());
 }

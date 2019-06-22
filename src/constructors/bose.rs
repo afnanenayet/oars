@@ -1,5 +1,5 @@
-use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, OA};
-use crate::utils::Integer;
+use crate::oa::{OAConstructor, OAResult, OA};
+use crate::utils::{ErrorKind, Integer, OarsError, OarsResult};
 use ndarray::Array2;
 use num::pow;
 use primes::is_prime;
@@ -37,7 +37,7 @@ impl<T: Integer> BoseChecked<T> {
     ///
     /// ```
     /// use oars::prelude::*;
-    /// # fn main() -> Result<(), OAConstructionError> {
+    /// # fn main() -> OarsResult<()> {
     /// use oars::constructors::{BoseChecked, Bose};
     ///
     /// let bose = BoseChecked {
@@ -51,19 +51,19 @@ impl<T: Integer> BoseChecked<T> {
     /// # Ok(())
     /// # }
     /// ```
-    pub fn verify(self) -> Result<Bose<T>, OAConstructionError> {
+    pub fn verify(self) -> OarsResult<Bose<T>> {
         if self.dimensions < T::from(2).unwrap()
             || self.dimensions > self.prime_base + T::from(1).unwrap()
         {
-            return Err(OAConstructionError::new(
-                OACErrorKind::InvalidParams,
+            return Err(OarsError::new(
+                ErrorKind::InvalidParams,
                 "Invalid dimensions",
             ));
         }
 
         if !is_prime(self.prime_base.to_u64().unwrap()) {
-            return Err(OAConstructionError::new(
-                OACErrorKind::InvalidParams,
+            return Err(OarsError::new(
+                ErrorKind::InvalidParams,
                 "Base is not prime",
             ));
         }
@@ -130,12 +130,6 @@ impl<T: Integer> OAConstructor<T> for Bose<T> {
 #[cfg(feature = "parallel")]
 impl<T: Integer> ParOAConstructor<T> for Bose<T> {
     fn gen_par(&self) -> OAResult<T> {
-        if !self.verify_params() {
-            return Err(OAConstructionError::new(
-                OACErrorKind::InvalidParams,
-                "invalid parameters",
-            ));
-        }
         let n = pow(self.prime_base, 2);
 
         // We create two different arrays: the first two columns and the rest, because the latter

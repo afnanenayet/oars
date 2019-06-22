@@ -1,5 +1,5 @@
-use crate::oa::{OACErrorKind, OAConstructionError, OAConstructor, OAResult, OA};
-use crate::utils::{poly_eval, to_base_fixed, Integer};
+use crate::oa::{OAConstructor, OAResult, OA};
+use crate::utils::{poly_eval, to_base_fixed, ErrorKind, Integer, OarsError, OarsResult};
 use ndarray::Array2;
 use num::pow::pow;
 use primes::is_prime;
@@ -14,10 +14,86 @@ use ndarray::{stack, Axis};
 #[cfg(feature = "parallel")]
 use ndarray_parallel::prelude::*;
 
+/// Generate an orthogonal array with any prime base and a strength between 2 and p + 1 with
+/// parameter checking.
+///
+/// The Bush construction technique, as described by Art Owen in his currently unpublished Monte
+/// Carlo textbook. In Chapter 10.4, he describes the Bush construction technique.
+///
+/// This struct can not generate orthogonal arrays, as it represents a pre-verified state that must
+/// be consumed before generating OAs.
+pub struct BushChecked<T: Integer> {
+    /// The strength of the orthogonal array. It *must* be a prime number.
+    pub prime_base: T,
+
+    /// The desired strength of the orthogonal array. It must be greater than or equal to 2.
+    /// It must also be
+    pub strength: T,
+
+    /// The dimensionality of the orthogonal array
+    pub dimensions: T,
+}
+
+impl<T: Integer> BushChecked<T> {
+    /// Verify that the parameters for Bush construction are valid
+    ///
+    /// This method returns a `Bush` struct upon success and consumes the original struct. If there
+    /// is an error, this will return an `OAConstructionError` and consume the original struct.
+    ///
+    /// Example usage:
+    ///
+    /// ```
+    /// use oars::prelude::*;
+    /// use oars::constructors::{Bush, BushChecked};
+    /// # fn main() -> OarsResult<()> {
+    /// let bush = BushChecked {
+    ///     prime_base: 5,
+    ///     dimensions: 3,
+    ///     strength: 3,
+    /// };
+    /// let oa = bush.verify()?.gen();
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn verify(self) -> OarsResult<Bush<T>> {
+        if !is_prime(self.prime_base.to_u64().unwrap()) {
+            return Err(OarsError::new(
+                ErrorKind::InvalidParams,
+                "Base is not prime",
+            ));
+        }
+
+        if self.dimensions < T::from(2).unwrap()
+            || self.dimensions > self.prime_base + T::from(1).unwrap()
+        {
+            return Err(OarsError::new(
+                ErrorKind::InvalidParams,
+                "Dimensions must be less than `prime_base` + 1",
+            ));
+        }
+
+        if self.strength < T::from(1).unwrap() || self.strength > self.prime_base {
+            return Err(OarsError::new(
+                ErrorKind::InvalidParams,
+                "`strength` must be between 1 and `prime_base` (inclusive)",
+            ));
+        }
+        Ok(Bush {
+            strength: self.strength,
+            prime_base: self.prime_base,
+            dimensions: self.dimensions,
+        })
+    }
+}
+
 /// Generate an orthogonal array with any prime base and a strength between 2 and p + 1
 ///
 /// The Bush construction technique, as described by Art Owen in his currently unpublished Monte
 /// Carlo textbook. In Chapter 10.4, he describes the Bush construction technique.
+///
+/// Note that using this struct directly does not check any parameters. You should only use
+/// this if you are certain that your parameters are valid, otherwise the resulting orthogonal
+/// array will be invalid.
 pub struct Bush<T: Integer> {
     /// The strength of the orthogonal array. It *must* be a prime number.
     pub prime_base: T,
@@ -30,38 +106,8 @@ pub struct Bush<T: Integer> {
     pub dimensions: T,
 }
 
-impl<T: Integer> Bush<T> {
-    /// Verify the parameters for Bush construction. This checks to see whether the prime base
-    /// is valid and returns whether the parameters are correct.
-    ///
-    /// For the Bush construction, the strength, `s`, must be between 2 and `p + 1`.
-    /// The resulting OA will have `p` levels, a strength of `t`, and `p^t` samples.
-    fn verify_params(&self) -> bool {
-        if !is_prime(self.prime_base.to_u64().unwrap()) {
-            return false;
-        }
-
-        if self.dimensions < T::from(2).unwrap()
-            || self.dimensions > self.prime_base + T::from(1).unwrap()
-        {
-            return false;
-        }
-
-        if self.strength < T::from(1).unwrap() || self.strength > self.prime_base {
-            return false;
-        }
-        true
-    }
-}
-
 impl<T: Integer> OAConstructor<T> for Bush<T> {
     fn gen(&self) -> OAResult<T> {
-        if !self.verify_params() {
-            return Err(OAConstructionError::new(
-                OACErrorKind::InvalidParams,
-                "Invalid parameters",
-            ));
-        }
         let n = pow(self.prime_base, self.strength.to_usize().unwrap());
         let mut points =
             Array2::<T>::zeros((n.to_usize().unwrap(), self.dimensions.to_usize().unwrap()));
@@ -94,12 +140,6 @@ impl<T: Integer> OAConstructor<T> for Bush<T> {
 #[cfg(feature = "parallel")]
 impl<T: Integer> ParOAConstructor<T> for Bush<T> {
     fn gen_par(&self) -> OAResult<T> {
-        if !self.verify_params() {
-            return Err(OAConstructionError::new(
-                OACErrorKind::InvalidParams,
-                "Invalid parameters",
-            ));
-        }
         let n = pow(self.prime_base, self.strength.to_usize().unwrap());
 
         let mut initial_points = Array2::<T>::zeros((
@@ -168,54 +208,52 @@ impl<T: Integer> ParOAConstructor<T> for Bush<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ndarray::arr2;
 
     #[test]
     fn bush_non_prime() {
-        let bush = Bush {
+        let bush = BushChecked {
             strength: 2,
             prime_base: 4,
             dimensions: 3,
         };
-        assert!(bush.gen().is_err());
+        assert!(bush.verify().is_err());
 
-        let bush = Bush {
+        let bush = BushChecked {
             strength: 2,
             prime_base: 9,
             dimensions: 3,
         };
-        assert!(bush.gen().is_err());
+        assert!(bush.verify().is_err());
 
-        let bush = Bush {
+        let bush = BushChecked {
             strength: 2,
             prime_base: 100,
             dimensions: 3,
         };
-        assert!(bush.gen().is_err());
+        assert!(bush.verify().is_err());
     }
 
     #[test]
-    #[cfg(feature = "parallel")]
-    fn bush_par_non_prime() {
-        let bush = Bush {
+    fn bush_bad_dims() {
+        let bush = BushChecked {
             strength: 2,
-            prime_base: 4,
-            dimensions: 3,
+            prime_base: 5,
+            dimensions: 7,
         };
-        assert!(bush.gen_par().is_err());
+        assert!(bush.verify().is_err());
 
-        let bush = Bush {
+        let bush = BushChecked {
             strength: 2,
-            prime_base: 9,
-            dimensions: 3,
+            prime_base: 7,
+            dimensions: 11,
         };
-        assert!(bush.gen_par().is_err());
+        assert!(bush.verify().is_err());
 
-        let bush = Bush {
+        let bush = BushChecked {
             strength: 2,
-            prime_base: 100,
-            dimensions: 3,
+            prime_base: 13,
+            dimensions: 17,
         };
-        assert!(bush.gen_par().is_err());
+        assert!(bush.verify().is_err());
     }
 }
