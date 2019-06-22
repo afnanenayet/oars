@@ -14,7 +14,7 @@ that work with the facilities for existing OAs or constructing SOAs from
 scratch.  On top of being able to generated orthogonal arrays, this crate
 provides utilities to verify orthogonal arrays given a set of parameters.
 
-These orthogonal arrays are not predefined and are constructed on the fly.  If
+These orthogonal arrays are not predefined and are constructed on the fly. If
 you want to create orthogonal arrays using predefined lookup tables, there are
 many resources online that provide the numbers for you to use.
 
@@ -56,10 +56,6 @@ dependency as such:
 
 ```toml
 [dependencies.oars]
-version = "0.4"
-features = ["serialize"]
+version = "1.0"
+features = ["serialize", "parallel"] # optional features
 ```
-
-## Roadmap
-
-- [ ] provide parallelized constructors and method variants
