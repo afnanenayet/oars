@@ -23,6 +23,10 @@ sampling, check out [Chapter
 10](https://statweb.stanford.edu/~owen/mc/Ch-var-adv.pdf) of Art Owen's Monte
 Carlo book.
 
+This library only guarantees stability against stable Rust, unless there is
+significant interest in supporting older versions. In such case, please let me
+know by either filing an issue on Github or contacting me.
+
 ## Development
 
 This project only relies on the

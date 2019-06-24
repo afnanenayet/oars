@@ -76,7 +76,7 @@ where
     result
 }
 
-/// The general categories of errors for `OAConstructionError`
+/// The general categories of errors for `OarsError`
 #[derive(Debug)]
 pub enum ErrorKind {
     /// Invalid parameters were supplied to the constructor
@@ -98,7 +98,7 @@ pub struct OarsError {
     desc: String,
 }
 
-/// A generic type for anything that can return `OAConstructionError`.
+/// A generic type for anything that can return an `OarsError`.
 ///
 /// This type is meant for anything that isn't an orthogonal array constructor.
 pub type OarsResult<T> = Result<T, OarsError>;

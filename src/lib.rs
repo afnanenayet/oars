@@ -18,8 +18,10 @@
 //! this crate does not yet provide an efficient constructor for strong orthogonal arrays.
 //!
 //! Many of the techniques used in this library were either taken from or inspired by Art Owen's
-//! currently unpublished book about Monte Carlo integration. This library was also developed
-//! through the Dartmouth Visual Computing Lab under the tutelage of Dr. Wojciech Jarosz.
+//! currently unpublished [book](https://statweb.stanford.edu/~owen/mc/) about Monte Carlo
+//! integration. This library was also developed through the Dartmouth [Visual Computing
+//! Lab](http://vcl.cs.dartmouth.edu/) under the tutelage of [Dr. Wojciech
+//! Jarosz](https://cs.dartmouth.edu/~wjarosz/).
 //!
 //! # Example Usage
 //!
@@ -27,6 +29,7 @@
 //! use oars::prelude::*;
 //! use oars::constructors::{Bose, BoseChecked};
 //! use oars::oa::{normalize, verify};
+//!
 //! # fn main() -> OarsResult<()> {
 //! // Configure the parameters for the Bose construction, using the checked variant so we can make
 //! // sure that the supplied parameters are valid.

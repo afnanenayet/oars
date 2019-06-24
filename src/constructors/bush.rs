@@ -38,7 +38,7 @@ impl<T: Integer> BushChecked<T> {
     /// Verify that the parameters for Bush construction are valid
     ///
     /// This method returns a `Bush` struct upon success and consumes the original struct. If there
-    /// is an error, this will return an `OAConstructionError` and consume the original struct.
+    /// is an error, this will return an `OarsError` and consume the original struct.
     ///
     /// Example usage:
     ///
