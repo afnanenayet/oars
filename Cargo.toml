@@ -2,7 +2,7 @@
 name = "oars"
 description = "A library providing construction methods and utility functions for orthogonal arrays and strong orthogonal arrays"
 repository = "https://github.com/afnanenayet/oars.git"
-version = "1.0.2"
+version = "1.0.3"
 authors = ["Afnan Enayet <afnan@afnan.io>"]
 edition = "2018"
 readme = "docs/readme.md"
