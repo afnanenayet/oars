@@ -1,6 +1,6 @@
 # oars
 
-[![Build Status](https://travis-ci.com/afnanenayet/oars.svg?token=QtxzrX3Qc2BDQfwx8D1K&branch=master)](https://travis-ci.com/afnanenayet/oars)
+[![Build Status](https://travis-ci.org/afnanenayet/oars.svg?branch=master)](https://travis-ci.org/afnanenayet/oars)
 [![crates badge](https://meritbadge.herokuapp.com/oars)](https://crates.io/crates/oars)
 [![Documentation](https://docs.rs/oars/badge.svg)](https://docs.rs/oars)
 ![License](https://img.shields.io/crates/l/oars/0.3.1.svg)
