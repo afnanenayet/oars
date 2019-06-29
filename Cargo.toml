@@ -15,7 +15,7 @@ travis-ci = { repository = "afnanenayet/oars", branch = "master" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-rand = "0.6.5"
+rand = "0.7"
 primes = "0.2.3"
 itertools = "0.8.0"
 num = "0.2.0"
