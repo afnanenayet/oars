@@ -48,7 +48,7 @@ fn bench_bose_xlarge(c: &mut Criterion) {
         prime_base: 251,
         dimensions: 250,
     };
-    c.bench_function("Bose (parallel) (base 251, dims 250)", move |b| {
+    c.bench_function("Bose (base 251, dims 250)", move |b| {
         b.iter(|| bose.gen().unwrap())
     });
 }

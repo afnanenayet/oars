@@ -1,29 +1,9 @@
 //! Misc utilities and convenience functions for the library
 
 use num::{self, NumCast};
+use std::error::Error;
+use std::fmt;
 use std::vec::Vec;
-
-/// A generic integer type that is compatible with the orthogonal array and strong orthogonal array
-/// definitions in the library. Almost every type that is compatible with `num::Integer` from the
-/// num-traits crate should be compatible with this integer type.
-///
-/// This trait is deprecated, and the [Integer](oars::Integer) trait should be used instead.
-#[deprecated(since = "0.3.0", note = "Use oars::Integer instead")]
-pub trait OAInteger: NumCast + num::Integer + Copy {}
-
-#[allow(deprecated)]
-impl<T> OAInteger for T where T: NumCast + num::Integer + Copy {}
-
-/// A generic float type that is compatible with the orthogonal array and strong orthogonal array
-/// definitions in the library. Almost every type that is compatible with `num::Float` from the
-/// num-traits crate should be compatible with this float type.
-///
-/// This trait is deprecated, and the [Float](oars::Float) trait should be used instead.
-#[deprecated(since = "0.3.0", note = "Use oars::Float instead")]
-pub trait OAFloat: NumCast + num::Float + Copy {}
-
-#[allow(deprecated)]
-impl<T> OAFloat for T where T: NumCast + num::Float + Copy {}
 
 /// A generic integer type.
 ///
@@ -94,6 +74,57 @@ where
         result = (result * base) + *coefficient;
     }
     result
+}
+
+/// The general categories of errors for `OarsError`
+#[derive(Debug)]
+pub enum ErrorKind {
+    /// Invalid parameters were supplied to the constructor
+    InvalidParams,
+
+    /// There was a runtime error that prevented the orthogonal array from being properly
+    /// constructed
+    RuntimeError,
+}
+
+/// An error indicating that there was some error constructing the orthogonal array.
+#[derive(Debug)]
+pub struct OarsError {
+    /// The general category of the error
+    error_type: ErrorKind,
+
+    /// A user-friendly description of the array which can supply additional information about
+    /// the error.
+    desc: String,
+}
+
+/// A generic type for anything that can return an `OarsError`.
+///
+/// This type is meant for anything that isn't an orthogonal array constructor.
+pub type OarsResult<T> = Result<T, OarsError>;
+
+impl Error for OarsError {
+    fn description(&self) -> &str {
+        &self.desc
+    }
+}
+
+impl fmt::Display for OarsError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "OA Construction Error: {}", &self.desc)
+    }
+}
+
+impl OarsError {
+    pub fn new<T>(kind: ErrorKind, msg: T) -> Self
+    where
+        T: Into<String>,
+    {
+        OarsError {
+            error_type: kind,
+            desc: msg.into(),
+        }
+    }
 }
 
 #[cfg(test)]

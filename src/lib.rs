@@ -18,39 +18,46 @@
 //! this crate does not yet provide an efficient constructor for strong orthogonal arrays.
 //!
 //! Many of the techniques used in this library were either taken from or inspired by Art Owen's
-//! currently unpublished book about Monte Carlo integration. This library was also developed
-//! through the Dartmouth Visual Computing Lab under the tutelage of Dr. Wojciech Jarosz.
+//! currently unpublished [book](https://statweb.stanford.edu/~owen/mc/) about Monte Carlo
+//! integration. This library was also developed through the Dartmouth [Visual Computing
+//! Lab](http://vcl.cs.dartmouth.edu/) under the tutelage of [Dr. Wojciech
+//! Jarosz](https://cs.dartmouth.edu/~wjarosz/).
 //!
 //! # Example Usage
 //!
 //! ```
-//! use oars::constructors::Bose;
-//! use oars::oa::{OAConstructor, normalize, verify};
-//! use oars::Integer;
+//! use oars::prelude::*;
+//! use oars::constructors::{Bose, BoseChecked};
+//! use oars::oa::{normalize, verify};
 //!
-//! // Configure the parameters for the bose construction
-//! let bose = Bose {
+//! # fn main() -> OarsResult<()> {
+//! // Configure the parameters for the Bose construction, using the checked variant so we can make
+//! // sure that the supplied parameters are valid.
+//! let bose = BoseChecked {
 //!     prime_base: 3,
 //!     dimensions: 3,
 //! };
 //!
 //! // Use the OAConstructor method to generate the orthogonal array
-//! let oa = bose.gen().unwrap();
+//! let oa = bose.verify()?.gen()?;
 //!
 //! // Verify that the orthogonal array is correct according to its parameters
-//! assert!(verify(&oa));
+//! assert!(verify(&oa)?);
 //!
 //! // Convert the orthogonal array into a point set usable for Monte Carlo, without jittering
-//! let points = normalize(&oa, 0.0, true);
+//! let points = normalize(&oa, 0.0, true)?;
+//! # Ok(())
+//! # }
 //! ```
 
 pub mod constructors;
 mod galois;
 pub mod oa;
 mod perm_vec;
+pub mod prelude;
 pub mod soa;
 mod utils;
 
 // Export these types because any consumer of this library will need to have these type definitions
 // in order to use the OA/SOA definitions and constructors
-pub use utils::{Float, Integer};
+pub use utils::{ErrorKind, Float, Integer, OarsError, OarsResult};

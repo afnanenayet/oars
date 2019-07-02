@@ -1,6 +1,6 @@
 # oars
 
-[![Build Status](https://travis-ci.com/afnanenayet/oars.svg?token=QtxzrX3Qc2BDQfwx8D1K&branch=master)](https://travis-ci.com/afnanenayet/oars)
+[![Build Status](https://travis-ci.org/afnanenayet/oars.svg?branch=master)](https://travis-ci.org/afnanenayet/oars)
 [![crates badge](https://meritbadge.herokuapp.com/oars)](https://crates.io/crates/oars)
 [![Documentation](https://docs.rs/oars/badge.svg)](https://docs.rs/oars)
 ![License](https://img.shields.io/crates/l/oars/0.3.1.svg)
@@ -14,7 +14,7 @@ that work with the facilities for existing OAs or constructing SOAs from
 scratch.  On top of being able to generated orthogonal arrays, this crate
 provides utilities to verify orthogonal arrays given a set of parameters.
 
-These orthogonal arrays are not predefined and are constructed on the fly.  If
+These orthogonal arrays are not predefined and are constructed on the fly. If
 you want to create orthogonal arrays using predefined lookup tables, there are
 many resources online that provide the numbers for you to use.
 
@@ -22,6 +22,10 @@ For more information about orthogonal arrays and their use in Monte Carlo
 sampling, check out [Chapter
 10](https://statweb.stanford.edu/~owen/mc/Ch-var-adv.pdf) of Art Owen's Monte
 Carlo book.
+
+This library only guarantees stability against stable Rust, unless there is
+significant interest in supporting older versions. In such case, please let me
+know by either filing an issue on Github or contacting me.
 
 ## Development
 
@@ -56,10 +60,6 @@ dependency as such:
 
 ```toml
 [dependencies.oars]
-version = "0.4"
-features = ["serialize"]
+version = "1.0"
+features = ["serialize", "parallel"] # optional features
 ```
-
-## Roadmap
-
-- [ ] provide parallelized constructors and method variants

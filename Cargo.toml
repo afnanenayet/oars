@@ -1,8 +1,8 @@
 [package]
 name = "oars"
-description = "A library providing construction methods and utility functions for orthogonal arrays"
+description = "A library providing construction methods and utility functions for orthogonal arrays and strong orthogonal arrays"
 repository = "https://github.com/afnanenayet/oars.git"
-version = "0.4.1"
+version = "1.1.0"
 authors = ["Afnan Enayet <afnan@afnan.io>"]
 edition = "2018"
 readme = "docs/readme.md"
@@ -15,7 +15,7 @@ travis-ci = { repository = "afnanenayet/oars", branch = "master" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-rand = "0.6.5"
+rand = "0.7"
 primes = "0.2.3"
 itertools = "0.8.0"
 num = "0.2.0"

@@ -50,5 +50,11 @@ fn bench_bush_par_large(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench_bush_small, bench_bush_large);
+criterion_group!(
+    benches,
+    bench_bush_small,
+    bench_bush_par_small,
+    bench_bush_large,
+    bench_bush_par_large
+);
 criterion_main!(benches);

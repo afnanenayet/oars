@@ -12,21 +12,21 @@ fn test_bose_init_verify() {
         dimensions: 2,
     };
     let oa = bose.gen().unwrap();
-    assert!(verify(&oa));
+    assert!(verify(&oa).unwrap());
 
     let bose = Bose {
         prime_base: 3,
         dimensions: 2,
     };
     let oa = bose.gen().unwrap();
-    assert!(verify(&oa));
+    assert!(verify(&oa).unwrap());
 
     let bose = Bose {
         prime_base: 3,
         dimensions: 3,
     };
     let oa = bose.gen().unwrap();
-    assert!(verify(&oa));
+    assert!(verify(&oa).unwrap());
 }
 
 #[test]
@@ -37,21 +37,21 @@ fn test_bose_par_init_verify() {
         dimensions: 2,
     };
     let oa = bose.gen_par().unwrap();
-    assert!(verify(&oa));
+    assert!(verify(&oa).unwrap());
 
     let bose = Bose {
         prime_base: 3,
         dimensions: 2,
     };
     let oa = bose.gen_par().unwrap();
-    assert!(verify(&oa));
+    assert!(verify(&oa).unwrap());
 
     let bose = Bose {
         prime_base: 3,
         dimensions: 3,
     };
     let oa = bose.gen_par().unwrap();
-    assert!(verify(&oa));
+    assert!(verify(&oa).unwrap());
 }
 
 #[test]
@@ -61,14 +61,14 @@ fn test_bose_normalize() {
         dimensions: 2,
     };
     let oa = bose.gen().unwrap();
-    normalize::<u32, f64>(&oa, 0.0, true);
-    normalize(&oa, 1.0, true);
+    assert!(normalize(&oa, 0.0, true).is_ok());
+    assert!(normalize(&oa, 1.0, true).is_ok());
 
     let bose = Bose {
         prime_base: 3,
         dimensions: 2,
     };
     let oa = bose.gen().unwrap();
-    normalize(&oa, 0.0, true);
-    normalize(&oa, 1.0, true);
+    assert!(normalize(&oa, 0.0, true).is_ok());
+    assert!(normalize(&oa, 1.0, true).is_ok());
 }
