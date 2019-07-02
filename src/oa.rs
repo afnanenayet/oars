@@ -199,15 +199,13 @@ where
 
 /// A generic trait to demarcate orthogonal array constructors
 pub trait OAConstructor<T: Integer> {
-    /// The method that generates an orthogonal array. Any necessary parameters must be handled
-    /// by the constructor itself.
+    /// Generate an orthogonal array
     fn gen(&self) -> OAResult<T>;
 }
 
 /// A generic trait that demarcates a parallelized orthogonal array constructor.
 pub trait ParOAConstructor<T: Integer> {
-    /// Generate an orthogonal array utilizing multithreading. Any necessary parameters must be
-    /// handled by the constructor itself.
+    /// Generate an orthogonal array with parallel construction
     fn gen_par(&self) -> OAResult<T>;
 }
 
