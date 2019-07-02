@@ -11,6 +11,7 @@ use itertools::Itertools;
 use ndarray::Array2;
 use num::{pow, ToPrimitive};
 use rand::prelude::*;
+use std::ops::Index;
 
 #[cfg(feature = "serialize")]
 use serde_derive::{Deserialize, Serialize};
@@ -53,6 +54,14 @@ where
             "OA:\n    levels: {}\n    strength: {}\n    factors: {}\n    index: {}\npoints:\n\n{}\n\n",
             self.levels, self.strength, self.factors, self.index, self.points
         )
+    }
+}
+
+impl<T: Integer> Index<[usize; 2]> for OA<T> {
+    type Output = T;
+
+    fn index(&self, idx: [usize; 2]) -> &Self::Output {
+        &self.points[idx]
     }
 }
 
