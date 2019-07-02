@@ -158,7 +158,7 @@ impl<T: Integer> ParOAConstructor<T> for Bush<T> {
                 let coeffs =
                     to_base_fixed(T::from(row_idx).unwrap(), self.prime_base, self.strength);
                 row.axis_iter_mut(Axis(0))
-                    .into_par_iter()
+                    .into_iter()
                     .enumerate()
                     .for_each(|(col_idx, mut col)| {
                         col[[col_idx; 0]] =
@@ -178,7 +178,7 @@ impl<T: Integer> ParOAConstructor<T> for Bush<T> {
                 .enumerate()
                 .for_each(|(row_idx, mut row)| {
                     row.axis_iter_mut(Axis(0))
-                        .into_par_iter()
+                        .into_iter()
                         .enumerate()
                         .for_each(|(_, mut col)| {
                             col[[0 as usize; 0]] = T::from(row_idx - 1).unwrap() % self.prime_base;

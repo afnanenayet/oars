@@ -59,4 +59,4 @@ mod utils;
 
 // Export these types because any consumer of this library will need to have these type definitions
 // in order to use the OA/SOA definitions and constructors
-pub use utils::{Float, Integer, OarsResult, OarsError, ErrorKind};
+pub use utils::{ErrorKind, Float, Integer, OarsError, OarsResult};
