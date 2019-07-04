@@ -2,6 +2,7 @@ use crate::oa::{OAConstructor, OAResult, OA};
 use crate::utils::{ErrorKind, Integer, OarsError, OarsResult};
 use ndarray::Array2;
 use num::pow;
+use oars_proc_macro::Checked;
 use primes::is_prime;
 
 #[cfg(feature = "parallel")]
@@ -15,18 +16,6 @@ use crate::oa::ParOAConstructor;
 
 #[cfg(feature = "parallel")]
 use ndarray::{stack, Axis};
-
-/// Generate an orthogonal array with a prime base of strength 2, with parameter checking.
-///
-/// This struct offers parameter checking to ensure that there is no undefined behavior when
-/// constructing the orthogonal array.
-pub struct BoseChecked<T: Integer> {
-    /// The strength of the orthogonal array. It *must* be a prime number.
-    pub prime_base: T,
-
-    /// The dimensionality of the orthogonal array
-    pub dimensions: T,
-}
 
 impl<T: Integer> BoseChecked<T> {
     /// Check the parameters for Bose construction
@@ -89,6 +78,7 @@ impl<T: Integer> BoseChecked<T> {
 /// sure that the supplied parameters are valid. If invalid parameters are supplied, then the
 /// resultant orthogonal array with be malformed and invalid. To utilize parameter checking,
 /// construct a `BoseChecked` struct instead.
+#[derive(Checked)]
 pub struct Bose<T: Integer> {
     /// The strength of the orthogonal array. It *must* be a prime number.
     pub prime_base: T,

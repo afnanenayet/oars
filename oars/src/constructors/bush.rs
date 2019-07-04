@@ -2,6 +2,7 @@ use crate::oa::{OAConstructor, OAResult, OA};
 use crate::utils::{poly_eval, to_base_fixed, ErrorKind, Integer, OarsError, OarsResult};
 use ndarray::Array2;
 use num::pow::pow;
+use oars_proc_macro::Checked;
 use primes::is_prime;
 use std::cmp::min;
 
@@ -13,26 +14,6 @@ use ndarray::{stack, Axis};
 
 #[cfg(feature = "parallel")]
 use ndarray_parallel::prelude::*;
-
-/// Generate an orthogonal array with any prime base and a strength between 2 and p + 1 with
-/// parameter checking.
-///
-/// The Bush construction technique, as described by Art Owen in his currently unpublished Monte
-/// Carlo textbook. In Chapter 10.4, he describes the Bush construction technique.
-///
-/// This struct can not generate orthogonal arrays, as it represents a pre-verified state that must
-/// be consumed before generating OAs.
-pub struct BushChecked<T: Integer> {
-    /// The strength of the orthogonal array. It *must* be a prime number.
-    pub prime_base: T,
-
-    /// The desired strength of the orthogonal array. It must be greater than or equal to 2.
-    /// It must also be
-    pub strength: T,
-
-    /// The dimensionality of the orthogonal array
-    pub dimensions: T,
-}
 
 impl<T: Integer> BushChecked<T> {
     /// Verify that the parameters for Bush construction are valid
@@ -94,6 +75,7 @@ impl<T: Integer> BushChecked<T> {
 /// Note that using this struct directly does not check any parameters. You should only use
 /// this if you are certain that your parameters are valid, otherwise the resulting orthogonal
 /// array will be invalid.
+#[derive(Checked)]
 pub struct Bush<T: Integer> {
     /// The strength of the orthogonal array. It *must* be a prime number.
     pub prime_base: T,
