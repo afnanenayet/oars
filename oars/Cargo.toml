@@ -31,11 +31,6 @@ default = []
 serialize = ["serde", "serde_derive", "ndarray/serde-1"]
 parallel = ["rayon", "ndarray-parallel"]
 
-[profile.bench]
-codegen-units = 1
-lto = true
-opt-level = 3
-
 [dev-dependencies]
 criterion = "0.2"
 
