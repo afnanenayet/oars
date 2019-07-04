@@ -1,49 +1,6 @@
-[package]
-name = "oars"
-description = "A library providing construction methods and utility functions for orthogonal arrays and strong orthogonal arrays"
-repository = "https://github.com/afnanenayet/oars.git"
-version = "1.1.0"
-authors = ["Afnan Enayet <afnan@afnan.io>"]
-edition = "2018"
-readme = "docs/readme.md"
-keywords = ["math", "orthogonal", "arrays", "monte", "carlo"]
-maintenance = { status = "actively-maintained" }
-license = "MIT"
+[workspace]
 
-[badges]
-travis-ci = { repository = "afnanenayet/oars", branch = "master" }
-maintenance = { status = "actively-developed" }
-
-[dependencies]
-rand = "0.7"
-primes = "0.2.3"
-itertools = "0.8.0"
-num = "0.2.0"
-ndarray = "0.12.1"
-ndarray-parallel = { version = "0.9", optional = true }
-serde = { version = "1.0", optional = true }
-serde_derive = { version = "1.0", optional = true }
-rayon = { version = "1.1", optional = true }
-
-[features]
-default = []
-serialize = ["serde", "serde_derive", "ndarray/serde-1"]
-parallel = ["rayon", "ndarray-parallel"]
-
-[profile.bench]
-codegen-units = 1
-lto = true
-opt-level = 3
-
-[dev-dependencies]
-criterion = "0.2"
-
-[[bench]]
-name = "bench_bose_construction"
-harness = false
-required-features = ["parallel"]
-
-[[bench]]
-name = "bench_bush_construction"
-harness = false
-required-features = ["parallel"]
+members = [
+    "oars",
+    "oars_proc_macro"
+]
