@@ -1,5 +1,7 @@
 [package]
 name = "oars_proc_macro"
+description = "Procedural macros for the oars crate"
+repository = "https://github.com/afnanenayet/oars.git"
 version = "0.1.0"
 authors = ["Afnan Enayet <afnan@afnan.io>"]
 edition = "2018"
