@@ -18,7 +18,9 @@ jobs:
       echo "##vso[task.setvariable variable=PATH;]$PATH:$HOME/.cargo/bin"
     displayName: 'Install rust'
   - script: rustc --version
+    displayName: 'Rust version'
   - script: cargo test
+    displayName: 'Run tests'
 
 - job: macOS
   pool:
@@ -29,7 +31,9 @@ jobs:
       echo "##vso[task.setvariable variable=PATH;]$PATH:$HOME/.cargo/bin"
     displayName: 'Install rust'
   - script: rustc --version
+    displayName: 'Rust version'
   - script: cargo test
+    displayName: 'Run tests'
 
 - job: Windows
   pool:
@@ -41,4 +45,6 @@ jobs:
       echo "##vso[task.setvariable variable=PATH;]%PATH%;%USERPROFILE%\.cargo\bin"
     displayName: 'Install rust'
   - script: rustc --version
+    displayName: 'Rust version'
   - script: cargo test
+    displayName: 'Run tests'
