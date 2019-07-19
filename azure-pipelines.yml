@@ -48,11 +48,3 @@ jobs:
     displayName: 'Rust version'
   - script: cargo test
     displayName: 'Run tests'
-
-- task: GithubRelease@0
-  inputs:
-    githubConnection: 'afnanenayet'
-    repositoryName: 'oars'
-    action: 'create'
-    tagSource: 'auto'
-    addChangeLog: true
