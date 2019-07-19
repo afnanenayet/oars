@@ -48,3 +48,15 @@ jobs:
     displayName: 'Rust version'
   - script: cargo test
     displayName: 'Run tests'
+
+- job: Plumbing
+  steps:
+    - task: GithubRelease@0
+      displayName: 'Create Github release'
+      inputs:
+        githubConnection: afnanenayet
+        repositoryName: afnanenayet/oars
+        action: 'create'
+        tagSource: auto
+        compareWith: 'lastFullRelease'
+        addChangeLog: true
