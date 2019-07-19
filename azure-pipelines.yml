@@ -54,7 +54,7 @@ jobs:
     - task: GithubRelease@0
       displayName: 'Create Github release'
       inputs:
-        githubConnection: afnanenayet
+        githubConnection: afnanenayetgh
         repositoryName: afnanenayet/oars
         action: 'create'
         tagSource: auto
