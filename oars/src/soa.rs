@@ -6,36 +6,15 @@
 
 use itertools::{zip, Itertools};
 use ndarray::Array2;
+use crate::utils::OarsError;
 use std::collections::{HashMap, HashSet};
+use oars_proc_macro::Checked;
 
 #[cfg(feature = "serialize")]
 use serde_derive::{Deserialize, Serialize};
 
-/// The general categories of errors for `SOAConstructionError`
-#[derive(Debug)]
-#[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
-pub enum SOACErrorKind {
-    /// Invalid parameters were supplied to the constructor
-    InvalidParams,
-
-    /// There was a runtime error that prevented the strong orthogonal array from being properly
-    /// constructed
-    RuntimeError,
-}
-
-/// An error indicating that there was some error constructing the strong orthogonal array.
-#[derive(Debug)]
-pub struct SOAConstructionError {
-    /// The general category of the error
-    error_type: SOACErrorKind,
-
-    /// A user-friendly description of the array which can supply additional information about
-    /// the error.
-    desc: String,
-}
-
 /// A result type for strong orthogonal array construction
-pub type SOAResult = Result<SOA, SOAConstructionError>;
+pub type SOAResult = Result<SOA, OarsError>;
 
 /// A trait that demarcates SOA constructors
 pub trait SOAConstructor {
@@ -46,7 +25,7 @@ pub trait SOAConstructor {
 
 /// A structure representing a strong orthogonal array, consisting of the array and associated
 /// metadata.
-#[derive(Debug)]
+#[derive(Debug, Checked)]
 pub struct SOA {
     /// The strength of the strong orthogonal array
     pub strength: u32,
