@@ -42,6 +42,7 @@
 // constructors
 mod bose;
 mod bush;
+mod soa;
 
 // Re-export child modules so constructors can be used as `constructors::some_constructor`
 pub use bose::Bose;

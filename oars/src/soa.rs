@@ -4,11 +4,11 @@
 //! for constructing SOAs.  This module also defines a few construction methods, as well as provide
 //! a verification method to ensure that the resulting points are stratified as an SOA should be.
 
+use crate::utils::OarsError;
 use itertools::{zip, Itertools};
 use ndarray::Array2;
-use crate::utils::OarsError;
-use std::collections::{HashMap, HashSet};
 use oars_proc_macro::Checked;
+use std::collections::{HashMap, HashSet};
 
 #[cfg(feature = "serialize")]
 use serde_derive::{Deserialize, Serialize};
