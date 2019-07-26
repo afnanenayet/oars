@@ -6,6 +6,7 @@ use crate::{
     soa::{SOAConstructor, SOAResult},
 };
 use ndarray::{prelude::*, Array2, Axis};
+use num::pow;
 use oars_proc_macro::Checked;
 
 /// The original SOA construction, as described by He and Tang
@@ -15,9 +16,12 @@ use oars_proc_macro::Checked;
 /// orthogonal array, and then applying a transformation to collapse the column groups of the GOA
 /// and an optional permutation in order to create the final SOA.
 #[derive(Checked)]
-pub struct HeTang {}
+pub struct HeTang<'a, T: Integer> {
+    /// The OA to generate the SOA from
+    oa: &'a OA<T>,
+}
 
-impl SOAConstructor for HeTang {
+impl<'a, T: Integer> SOAConstructor for HeTang<'a, T> {
     fn gen(&self) -> SOAResult {
         // TODO
         unimplemented!();
@@ -30,7 +34,7 @@ impl SOAConstructor for HeTang {
 /// construction. The process for creating GOAs as well as embeddability for orthogonal arrays is
 /// defined in He and Tang's [paper](https://arxiv.org/pdf/1407.0204.pdf).
 fn oa_to_goa<T: Integer>(oa: &OA<T>) -> Array2<T> {
-    // TODO right now this is special cased for OAs of strength 3
+    // TODO generalize this to more strengths
     if oa.strength != T::from(3).unwrap() {
         panic!("This method has not been implemented for any orthogonal arrays of strength != 3");
     }
@@ -39,8 +43,8 @@ fn oa_to_goa<T: Integer>(oa: &OA<T>) -> Array2<T> {
     // of the original OA). The new array will have the same number of rows as the original OA.
     let m_prime = oa.factors.to_usize().unwrap() - 1;
     let goa_factors = oa.strength.to_usize().unwrap() * m_prime;
-    let n = oa.points.len_of(Axis(1));
-    let mut goa = ndarray::Array2::zeros((goa_factors, n));
+    let n = oa.points.len_of(Axis(0));
+    let mut goa = ndarray::Array2::zeros((n, goa_factors));
 
     // We use equations 3.1-3.3 in the Vicky thesis to map columns to the GOA
     // TODO use more elegant syntax to copy over a whole column
@@ -53,7 +57,7 @@ fn oa_to_goa<T: Integer>(oa: &OA<T>) -> Array2<T> {
         let goa_col_idx = oa_col_idx * oa.strength.to_usize().unwrap();
 
         for i in 0..n {
-            goa[[goa_col_idx, i]] = oa[[oa_col_idx, i]];
+            goa[[i, goa_col_idx]] = oa[[i, oa_col_idx]];
         }
     }
 
@@ -64,7 +68,7 @@ fn oa_to_goa<T: Integer>(oa: &OA<T>) -> Array2<T> {
         let goa_col_idx = (oa_col_idx * oa.strength.to_usize().unwrap()) + 1;
 
         for i in 0..n {
-            goa[[goa_col_idx, i]] = oa[[oa.factors.to_usize().unwrap(), i]];
+            goa[[i, goa_col_idx]] = oa[[i, oa.factors.to_usize().unwrap() - 1]];
         }
     }
 
@@ -75,7 +79,7 @@ fn oa_to_goa<T: Integer>(oa: &OA<T>) -> Array2<T> {
         let oa_col = (oa_col_idx + 1) % m_prime;
 
         for i in 0..n {
-            goa[[goa_col_idx, i]] = oa[[oa_col, i]];
+            goa[[i, goa_col_idx]] = oa[[i, oa_col]];
         }
     }
     goa
@@ -85,9 +89,69 @@ fn oa_to_goa<T: Integer>(oa: &OA<T>) -> Array2<T> {
 ///
 /// Given a generalized orthogonal array (GOA), and its properties, perform the transformation as
 /// described by He and Tang and return the resultant strong orthogonal array.
-fn goa_to_soa<T: Integer>(arr: &Array2<T>, s: T, m_prime: usize) -> Array2<T> {
-    unimplemented!();
+fn goa_to_soa<T: Integer>(arr: &Array2<T>, strength: T, levels: T, m_prime: usize) -> Array2<T> {
+    let strength = strength.to_usize().unwrap();
+    let n = arr.len_of(Axis(0));
+    let mut soa = Array2::zeros((n, m_prime));
+
+    // Reduce the GOA to an SOA
+    for col in 0..m_prime {
+        for i in 0..n {
+            let mut res = T::from(0).unwrap();
+
+            for offset in 0..strength {
+                let goa_col = (col * m_prime) + offset;
+
+                // the number to multiply the coefficient by (the coefficient being the number in
+                // the GOA)
+                let power = pow(levels, strength - offset - 1);
+                res = res + (power * arr[[i, goa_col]]);
+            }
+            soa[[i, col]] = res;
+        }
+    }
+    soa
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use super::*;
+    use ndarray::array;
+
+    #[test]
+    fn test_oa_to_goa() {
+        // Example taken from Vicky MSc thesis, figures (3.5 - 3.7)
+        let oa_pts = array![
+            [0, 0, 0, 0],
+            [0, 0, 1, 1],
+            [0, 1, 0, 1],
+            [0, 1, 1, 0],
+            [1, 0, 0, 1],
+            [1, 0, 1, 0],
+            [1, 1, 0, 0],
+            [1, 1, 1, 1],
+        ];
+        let oa = OA {
+            factors: 4,
+            strength: 3,
+            levels: 2,
+            index: 1,
+            points: oa_pts,
+        };
+
+        // The expected SOA (Vikcy, Fig. 3.6)
+        let ground_truth = array![
+            [0, 0, 0],
+            [2, 3, 6],
+            [3, 6, 2],
+            [1, 5, 4],
+            [6, 2, 3],
+            [4, 1, 5],
+            [5, 4, 1],
+            [7, 7, 7],
+        ];
+        let goa = oa_to_goa(&oa);
+        let soa = goa_to_soa(&goa, oa.strength, oa.levels, 3);
+        assert!(soa == ground_truth);
+    }
+}
