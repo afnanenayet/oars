@@ -49,3 +49,4 @@ pub use bose::Bose;
 pub use bose::BoseChecked;
 pub use bush::Bush;
 pub use bush::BushChecked;
+pub use soa::HeTang;

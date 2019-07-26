@@ -120,6 +120,15 @@ fn goa_to_soa<T: Integer>(arr: &Array2<T>, strength: T, levels: T, m_prime: usiz
     soa
 }
 
+/// Perform random digit scrambling on a strong orthogonal array
+///
+/// This method of scrambling performs a form of shuffling on the strong orthogonal array that
+/// should be robust and maintain the stratification properties of the original SOA. This method
+/// will create a new SOA and will not modify the original struct.
+fn random_digit_scramble(soa: &SOA) -> SOA {
+    unimplemented!();
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

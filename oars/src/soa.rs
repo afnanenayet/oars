@@ -25,7 +25,7 @@ pub trait SOAConstructor {
 
 /// A structure representing a strong orthogonal array, consisting of the array and associated
 /// metadata.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SOA {
     /// The strength of the strong orthogonal array
     pub strength: u32,
