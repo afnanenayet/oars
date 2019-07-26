@@ -1,9 +1,10 @@
 //! Experimental constructors for strong orthogonal arrays
 
-use crate::utils::Integer;
 use crate::{
     oa::OA,
+    soa::SOA,
     soa::{SOAConstructor, SOAResult},
+    utils::Integer,
 };
 use ndarray::{prelude::*, Array2, Axis};
 use num::pow;
@@ -23,8 +24,14 @@ pub struct HeTang<'a, T: Integer> {
 
 impl<'a, T: Integer> SOAConstructor for HeTang<'a, T> {
     fn gen(&self) -> SOAResult {
-        // TODO
-        unimplemented!();
+        let m_prime = self.oa.factors.to_usize().unwrap() - 1;
+        let goa = oa_to_goa(&self.oa);
+        let soa = goa_to_soa(&goa, self.oa.strength, self.oa.levels, m_prime);
+        Ok(SOA {
+            strength: self.oa.strength.to_u32().unwrap(),
+            base: self.oa.levels.to_u32().unwrap(),
+            points: soa,
+        })
     }
 }
 
@@ -89,15 +96,15 @@ fn oa_to_goa<T: Integer>(oa: &OA<T>) -> Array2<T> {
 ///
 /// Given a generalized orthogonal array (GOA), and its properties, perform the transformation as
 /// described by He and Tang and return the resultant strong orthogonal array.
-fn goa_to_soa<T: Integer>(arr: &Array2<T>, strength: T, levels: T, m_prime: usize) -> Array2<T> {
+fn goa_to_soa<T: Integer>(arr: &Array2<T>, strength: T, levels: T, m_prime: usize) -> Array2<u32> {
     let strength = strength.to_usize().unwrap();
     let n = arr.len_of(Axis(0));
-    let mut soa = Array2::zeros((n, m_prime));
+    let mut soa = Array2::<u32>::zeros((n, m_prime));
 
     // Reduce the GOA to an SOA
     for col in 0..m_prime {
         for i in 0..n {
-            let mut res = T::from(0).unwrap();
+            let mut res = 0;
 
             for offset in 0..strength {
                 let goa_col = (col * m_prime) + offset;
@@ -105,7 +112,7 @@ fn goa_to_soa<T: Integer>(arr: &Array2<T>, strength: T, levels: T, m_prime: usiz
                 // the number to multiply the coefficient by (the coefficient being the number in
                 // the GOA)
                 let power = pow(levels, strength - offset - 1);
-                res = res + (power * arr[[i, goa_col]]);
+                res = res + (power * arr[[i, goa_col]]).to_u32().unwrap();
             }
             soa[[i, col]] = res;
         }
@@ -116,10 +123,11 @@ fn goa_to_soa<T: Integer>(arr: &Array2<T>, strength: T, levels: T, m_prime: usiz
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{constructors::Bush, oa::OAConstructor, soa::verify};
     use ndarray::array;
 
     #[test]
-    fn test_oa_to_goa() {
+    fn test_soa_pipeline() {
         // Example taken from Vicky MSc thesis, figures (3.5 - 3.7)
         let oa_pts = array![
             [0, 0, 0, 0],
@@ -153,5 +161,19 @@ mod tests {
         let goa = oa_to_goa(&oa);
         let soa = goa_to_soa(&goa, oa.strength, oa.levels, 3);
         assert!(soa == ground_truth);
+    }
+
+    #[test]
+    fn test_he_tang_ctor() {
+        let bush = Bush {
+            prime_base: 17,
+            strength: 3,
+            dimensions: 4,
+        };
+        let oa = bush.gen().unwrap();
+        let ht = HeTang { oa: &oa };
+        let soa = ht.gen().unwrap();
+        dbg!(&soa);
+        assert!(verify(&soa));
     }
 }
