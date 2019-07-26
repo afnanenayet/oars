@@ -107,7 +107,7 @@ fn goa_to_soa<T: Integer>(arr: &Array2<T>, strength: T, levels: T, m_prime: usiz
             let mut res = 0;
 
             for offset in 0..strength {
-                let goa_col = (col * m_prime) + offset;
+                let goa_col = (col * 3) + offset;
 
                 // the number to multiply the coefficient by (the coefficient being the number in
                 // the GOA)
@@ -164,16 +164,80 @@ mod tests {
     }
 
     #[test]
-    fn test_he_tang_ctor() {
+    fn test_he_tang_base_7_str_3_dim_5() {
         let bush = Bush {
-            prime_base: 17,
+            prime_base: 7,
+            strength: 3,
+            dimensions: 5,
+        };
+        let oa = bush.gen().unwrap();
+        let ht = HeTang { oa: &oa };
+        let soa = ht.gen().unwrap();
+        assert!(verify(&soa));
+    }
+
+    #[test]
+    fn test_he_tang_base_7_str_3_dim_4() {
+        let bush = Bush {
+            prime_base: 7,
             strength: 3,
             dimensions: 4,
         };
         let oa = bush.gen().unwrap();
         let ht = HeTang { oa: &oa };
         let soa = ht.gen().unwrap();
-        dbg!(&soa);
+        assert!(verify(&soa));
+    }
+
+    #[test]
+    fn test_he_tang_base_17_str_3_dim_6() {
+        let bush = Bush {
+            prime_base: 17,
+            strength: 3,
+            dimensions: 6,
+        };
+        let oa = bush.gen().unwrap();
+        let ht = HeTang { oa: &oa };
+        let soa = ht.gen().unwrap();
+        assert!(verify(&soa));
+    }
+
+    #[test]
+    fn test_he_tang_base_17_str_3_dim_11() {
+        let bush = Bush {
+            prime_base: 17,
+            strength: 3,
+            dimensions: 11,
+        };
+        let oa = bush.gen().unwrap();
+        let ht = HeTang { oa: &oa };
+        let soa = ht.gen().unwrap();
+        assert!(verify(&soa));
+    }
+
+    #[test]
+    fn test_he_tang_base_17_str_3_dim_5() {
+        let bush = Bush {
+            prime_base: 17,
+            strength: 3,
+            dimensions: 5,
+        };
+        let oa = bush.gen().unwrap();
+        let ht = HeTang { oa: &oa };
+        let soa = ht.gen().unwrap();
+        assert!(verify(&soa));
+    }
+
+    #[test]
+    fn test_he_tang_base_7_str_3_dim_3() {
+        let bush = Bush {
+            prime_base: 7,
+            strength: 3,
+            dimensions: 3,
+        };
+        let oa = bush.gen().unwrap();
+        let ht = HeTang { oa: &oa };
+        let soa = ht.gen().unwrap();
         assert!(verify(&soa));
     }
 }
