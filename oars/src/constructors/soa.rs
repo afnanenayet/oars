@@ -19,7 +19,7 @@ use oars_proc_macro::Checked;
 #[derive(Checked)]
 pub struct HeTang<'a, T: Integer> {
     /// The OA to generate the SOA from
-    oa: &'a OA<T>,
+    pub oa: &'a OA<T>,
 }
 
 impl<'a, T: Integer> SOAConstructor for HeTang<'a, T> {
