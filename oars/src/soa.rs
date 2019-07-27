@@ -150,6 +150,14 @@ pub fn verify(soa: &SOA) -> bool {
     true
 }
 
+/// Normalize the points of an SOA so that they fall within the [0, 1)^R canonical domain
+///
+/// This method simply scales all of the points so that they fall within the domain.
+pub fn normalize(soa: &SOA) -> Array2<f32> {
+    let norm_factor = soa.base.pow(soa.strength);
+    soa.points.map(|x| (*x as f32) / (norm_factor as f32))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -317,5 +325,46 @@ mod tests {
             points: ground_truth,
         };
         assert!(!verify(&soa));
+    }
+
+    #[test]
+    fn test_normalize_soa() {
+        // FIXME
+        // This is a very quick and dirty test just to make sure the function even runs, there
+        // needs to be more comprehensive tests to prove the correctness of this method
+        let ground_truth = array![
+            [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [7, 6, 3, 6, 2, 2, 3, 7, 7, 6, 3],
+            [5, 5, 4, 1, 4, 0, 0, 1, 5, 5, 5],
+            [6, 3, 7, 6, 3, 6, 2, 2, 3, 7, 7],
+            [7, 6, 3, 7, 6, 3, 6, 2, 2, 3, 7],
+            [7, 7, 6, 3, 7, 6, 3, 6, 2, 2, 3],
+            [5, 5, 5, 4, 1, 5, 4, 1, 4, 0, 1],
+            [4, 1, 5, 5, 4, 1, 5, 4, 1, 4, 1],
+            [4, 0, 1, 5, 5, 4, 1, 5, 4, 1, 5],
+            [6, 2, 2, 3, 7, 7, 6, 3, 7, 6, 3],
+            [5, 4, 0, 0, 1, 5, 5, 4, 1, 5, 5],
+            [6, 3, 6, 2, 2, 3, 7, 7, 6, 3, 7],
+            [3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6],
+            [0, 1, 4, 1, 5, 5, 4, 0, 0, 1, 4],
+            [2, 2, 3, 6, 3, 7, 7, 6, 2, 2, 2],
+            [1, 4, 0, 1, 4, 1, 5, 5, 4, 0, 0],
+            [0, 1, 4, 0, 1, 4, 1, 5, 5, 4, 0],
+            [0, 0, 1, 4, 0, 1, 4, 1, 5, 5, 4],
+            [2, 2, 2, 3, 6, 2, 3, 6, 3, 7, 6],
+            [3, 6, 2, 2, 3, 6, 2, 3, 6, 3, 6],
+            [3, 7, 6, 2, 2, 3, 6, 2, 3, 6, 2],
+            [3, 7, 6, 2, 2, 3, 6, 2, 3, 6, 2],
+            [1, 5, 5, 4, 0, 0, 1, 4, 0, 1, 4],
+            [2, 3, 7, 7, 6, 2, 2, 3, 6, 2, 2],
+            [1, 4, 1, 5, 5, 4, 0, 0, 1, 4, 0],
+        ];
+
+        let soa = SOA {
+            strength: 3,
+            base: 2,
+            points: ground_truth,
+        };
+        let norm_soa = normalize(&soa);
     }
 }
