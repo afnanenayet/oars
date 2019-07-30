@@ -48,7 +48,13 @@ fn oa_to_goa<T: Integer>(oa: &OA<T>) -> Array2<T> {
 
     // We create a new array with `strength` * `m'` factors (multiply the dimensions by the strength
     // of the original OA). The new array will have the same number of rows as the original OA.
-    let m_prime = oa.factors.to_usize().unwrap() - 1;
+    // In Liu, Liu p 1724, they give us the formula to generically find m prime
+    // m' = \floor{2(m - 1) / (t - 1)}
+    // TODO(afnan) implement the generic m' formula instead of hardcoding the one for t = 3
+    //let m_prime = oa.factors.to_usize().unwrap() - 1;
+    let m = oa.factors.to_usize().unwrap() - 1;
+    let t = oa.strength.to_usize().unwrap();
+    let m_prime = 2 * (m - 1) / (t - 1);
     let goa_factors = oa.strength.to_usize().unwrap() * m_prime;
     let n = oa.points.len_of(Axis(0));
     let mut goa = ndarray::Array2::zeros((n, goa_factors));
