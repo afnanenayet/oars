@@ -11,7 +11,7 @@ maintenance = { status = "actively-maintained" }
 license = "MIT"
 
 [badges]
-travis-ci = { repository = "afnanenayet/oars", branch = "master" }
+azure-devops = { project = "afnanenayet/oars", pipeline = "afnanenayet.oars" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]
