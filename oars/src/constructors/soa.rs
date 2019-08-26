@@ -8,6 +8,7 @@ use crate::{
 };
 use ndarray::{prelude::*, Array2, Axis};
 use num::pow;
+use num::{NumCast, ToPrimitive};
 use oars_proc_macro::Checked;
 
 /// The original SOA construction, as described by He and Tang
@@ -133,6 +134,31 @@ fn goa_to_soa<T: Integer>(arr: &Array2<T>, strength: T, levels: T, m_prime: usiz
 /// will create a new SOA and will not modify the original struct.
 fn random_digit_scramble(_soa: &SOA) -> SOA {
     unimplemented!();
+}
+
+/// The construction method introduced by Liu & Liu (2015)
+///
+/// This is an implementation of the SOA construction method developed by Liu & Liu's 2015 paper.
+/// This provides a method of constructing an SOA from an OA and a construction matrix.
+pub struct LiuLiu<'a, T: Integer> {
+    /// The OA to use to create the SOA
+    pub oa: &'a OA<T>,
+}
+
+impl<'a, T: Integer> SOAConstructor for LiuLiu<'a, T> {
+    fn gen(&self) -> SOAResult {
+        let t = self.oa.strength.to_u32().unwrap();
+        let m = self.oa.factors;
+
+        // Create the V_1 matrix as described in Liu & Liu, p. 1716.
+        let mut v_1 = ndarray::Array2::<u32>::zeros((t.to_usize().unwrap(), 2));
+
+        for i in 0..t.to_usize().unwrap() {
+            v_1[[0, i]] = pow(t, i);
+            v_1[[1, i]] = pow(t, t.to_usize().unwrap() - i - 1);
+        }
+        unimplemented!();
+    }
 }
 
 #[cfg(test)]
