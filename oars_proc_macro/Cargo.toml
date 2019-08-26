@@ -2,7 +2,7 @@
 name = "oars_proc_macro"
 description = "Procedural macros for the oars crate"
 repository = "https://github.com/afnanenayet/oars.git"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Afnan Enayet <afnan@afnan.io>"]
 edition = "2018"
 license = "MIT"
@@ -13,6 +13,6 @@ license = "MIT"
 proc-macro = true
 
 [dependencies]
-syn = "0.15"
-proc-macro2 = "0.4"
-quote = "0.6"
+syn = "1.0"
+proc-macro2 = "1.0"
+quote = "1.0"
