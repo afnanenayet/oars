@@ -46,9 +46,9 @@ fn oa_to_goa<T: Integer>(oa: &OA<T>) -> Array2<T> {
         panic!("This method has not been implemented for any orthogonal arrays of strength != 3");
     }
 
-    // We create a new array with `strength` * `m'` factors (multiply the dimensions by the strength
-    // of the original OA). The new array will have the same number of rows as the original OA.
-    // In Liu, Liu p 1724, they give us the formula to generically find m prime
+    // We create a new array with `strength` * `m'` factors (multiply the dimensions by the
+    // strength of the original OA). The new array will have the same number of rows/dimensions as
+    // the original OA.  In Liu, Liu p 1724, they give us the formula to generically find m prime
     // m' = \floor{2(m - 1) / (t - 1)}
     // TODO(afnan) implement the generic m' formula instead of hardcoding the one for t = 3
     //let m_prime = oa.factors.to_usize().unwrap() - 1;
@@ -118,7 +118,7 @@ fn goa_to_soa<T: Integer>(arr: &Array2<T>, strength: T, levels: T, m_prime: usiz
                 // the number to multiply the coefficient by (the coefficient being the number in
                 // the GOA)
                 let power = pow(levels, strength - offset - 1);
-                res = res + (power * arr[[i, goa_col]]).to_u32().unwrap();
+                res += (power * arr[[i, goa_col]]).to_u32().unwrap();
             }
             soa[[i, col]] = res;
         }
@@ -131,7 +131,7 @@ fn goa_to_soa<T: Integer>(arr: &Array2<T>, strength: T, levels: T, m_prime: usiz
 /// This method of scrambling performs a form of shuffling on the strong orthogonal array that
 /// should be robust and maintain the stratification properties of the original SOA. This method
 /// will create a new SOA and will not modify the original struct.
-fn random_digit_scramble(soa: &SOA) -> SOA {
+fn random_digit_scramble(_soa: &SOA) -> SOA {
     unimplemented!();
 }
 
