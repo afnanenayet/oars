@@ -6,7 +6,7 @@ use crate::{
     soa::{SOAConstructor, SOAResult},
     utils::Integer,
 };
-use ndarray::{prelude::*, Array2, Axis};
+use ndarray::{prelude::*, s, Array2, Axis};
 use num::pow;
 use num::{NumCast, ToPrimitive};
 use oars_proc_macro::Checked;
@@ -147,16 +147,11 @@ pub struct LiuLiu<'a, T: Integer> {
 
 impl<'a, T: Integer> SOAConstructor for LiuLiu<'a, T> {
     fn gen(&self) -> SOAResult {
-        let t = self.oa.strength.to_u32().unwrap();
-        let m = self.oa.factors;
+        let t = self.oa.strength.to_usize().unwrap();
+        let _mm = self.oa.factors;
 
         // Create the V_1 matrix as described in Liu & Liu, p. 1716.
-        let mut v_1 = ndarray::Array2::<u32>::zeros((t.to_usize().unwrap(), 2));
-
-        for i in 0..t.to_usize().unwrap() {
-            v_1[[0, i]] = pow(t, i);
-            v_1[[1, i]] = pow(t, t.to_usize().unwrap() - i - 1);
-        }
+        let v_1 = Array2::from((0..t).map(|i| [i, t - i - 1]).collect::<Vec<[usize; 2]>>());
         unimplemented!();
     }
 }
