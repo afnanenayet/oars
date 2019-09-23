@@ -147,12 +147,60 @@ pub struct LiuLiu<'a, T: Integer> {
 
 impl<'a, T: Integer> SOAConstructor for LiuLiu<'a, T> {
     fn gen(&self) -> SOAResult {
-        let t = self.oa.strength.to_usize().unwrap();
-        let _mm = self.oa.factors;
+        let t = self.oa.strength;
+        let m = self.oa.factors;
+
+        // Calculate `k` and `q` based on `m = kt + q` knowing that `q` must be less than t. We can
+        // easily calculate this by doing a rounded integer division (m / t) and let q be the
+        // remainder. (Liu & Liu, 1716).
+        let k = m / t;
+        let q = m % t;
+
+        // There are some special provisions for when q is >= t / 2. If this is true, we will have
+        // to add an extra column and an extra row to the $R_1$ matrix.
+        let extra_col = q < (t / T::from(2).unwrap());
 
         // Create the V_1 matrix as described in Liu & Liu, p. 1716.
-        let v_1 = Array2::from((0..t).map(|i| [i, t - i - 1]).collect::<Vec<[usize; 2]>>());
-        unimplemented!();
+        let v_1 = Array2::from(
+            (0..(t.to_usize().unwrap()))
+                .map(|i| {
+                    let i = T::from(i).unwrap();
+                    [i, t - i - T::from(1).unwrap()]
+                })
+                .collect::<Vec<[T; 2]>>(),
+        );
+        // Liu, Liu describes r_1 as an m by 2k (or + 1) matrix based on q. Since everything is
+        // already zeroed out except for the v_1 blocks, we don't have to worry about explicitly
+        // setting the zero matrices.
+        let r_1_dims = if extra_col {
+            (m.to_usize().unwrap(), 2 * k.to_usize().unwrap())
+        } else {
+            (m.to_usize().unwrap(), 2 * k.to_usize().unwrap() + 1)
+        };
+        let mut r_1 = Array2::<T>::zeros(r_1_dims);
+
+        // Add the V_1 matrices to R_1
+        for i in 0..k.to_usize().unwrap() {
+            // Determine the indices of where V_1 will be copied into R_1
+            // TODO(afnan) check if the ranges are inclusive (if so, we need to add 1 to the
+            // *_right indices).
+            let top_left = k.to_usize().unwrap() * i;
+            let top_right = top_left + 1;
+            let bottom_left = (k * t).to_usize().unwrap();
+            let bottom_right = bottom_left + 1;
+            r_1.slice_mut(s![top_left..top_right, bottom_left..bottom_right])
+                .assign(&v_1);
+        }
+
+        // create the $d$ vector if necessary and add it to r_1
+        if extra_col {
+            let d = Vec::<T>::with_capacity(m.to_usize().unwrap());
+
+            for i in 0..q.to_usize().unwrap() {
+                d[i] = s.pow(i);
+            }
+        }
+        unimplemented!("Still in progress");
     }
 }
 
