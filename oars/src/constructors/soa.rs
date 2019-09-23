@@ -7,8 +7,7 @@ use crate::{
     utils::Integer,
 };
 use ndarray::{prelude::*, s, Array2, Axis};
-use num::pow;
-use num::{NumCast, ToPrimitive};
+use num::{pow, NumCast, ToPrimitive};
 use oars_proc_macro::Checked;
 
 /// The original SOA construction, as described by He and Tang
@@ -149,6 +148,7 @@ impl<'a, T: Integer> SOAConstructor for LiuLiu<'a, T> {
     fn gen(&self) -> SOAResult {
         let t = self.oa.strength;
         let m = self.oa.factors;
+        let s = self.oa.levels;
 
         // Calculate `k` and `q` based on `m = kt + q` knowing that `q` must be less than t. We can
         // easily calculate this by doing a rounded integer division (m / t) and let q be the
@@ -194,11 +194,14 @@ impl<'a, T: Integer> SOAConstructor for LiuLiu<'a, T> {
 
         // create the $d$ vector if necessary and add it to r_1
         if extra_col {
-            let d = Vec::<T>::with_capacity(m.to_usize().unwrap());
+            let mut d = Vec::<T>::with_capacity(m.to_usize().unwrap());
 
             for i in 0..q.to_usize().unwrap() {
-                d[i] = s.pow(i);
+                d[i] = pow(s, i);
             }
+
+            // TODO(afnan) figure out the offset for the last half of non-zero numbers in the
+            // array, finish the other for loop
         }
         unimplemented!("Still in progress");
     }
