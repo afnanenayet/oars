@@ -200,6 +200,11 @@ impl<'a, T: Integer> SOAConstructor for LiuLiu<'a, T> {
                 d[i] = pow(s, i);
             }
 
+            for i in 1..=(q.to_usize().unwrap()) {
+                let idx = d.len() - i;
+                d[idx] = pow(s, t.to_usize().unwrap() - i);
+            }
+
             // TODO(afnan) figure out the offset for the last half of non-zero numbers in the
             // array, finish the other for loop
         }
