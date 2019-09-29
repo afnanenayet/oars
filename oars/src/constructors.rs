@@ -42,6 +42,7 @@
 // constructors
 mod bose;
 mod bush;
+mod liu_liu;
 mod soa;
 
 // Re-export child modules so constructors can be used as `constructors::some_constructor`
@@ -49,4 +50,5 @@ pub use bose::Bose;
 pub use bose::BoseChecked;
 pub use bush::Bush;
 pub use bush::BushChecked;
+pub use liu_liu::LiuLiu;
 pub use soa::HeTang;
