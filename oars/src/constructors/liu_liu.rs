@@ -1,10 +1,10 @@
 use crate::{
     oa::OA,
     soa::{SOAConstructor, SOAResult, SOA},
-    utils::{Integer, OarsError},
+    utils::Integer,
 };
-use ndarray::{prelude::*, s, Array1, Array2};
-use num::{pow, FromPrimitive, ToPrimitive};
+use ndarray::{s, Array1, Array2};
+use num::{pow, ToPrimitive};
 
 /// The construction method introduced by Liu & Liu (2015)
 ///
@@ -19,6 +19,34 @@ impl<'a, T: Integer> SOAConstructor for LiuLiu<'a, T> {
     fn gen(&self) -> SOAResult {
         let t = self.oa.strength.to_u32().unwrap();
         let m = self.oa.factors.to_u32().unwrap();
+
+        // Calculate `k` and `q` based on `m = kt + q` knowing that `q` must be less than t. We can
+        // easily calculate this by doing a rounded integer division (m / t) and let q be the
+        // remainder. (Liu & Liu, 1716).
+        let q = m % t;
+
+        // There are some special provisions for when q is >= t / 2. If this is true, we will have
+        // to add an extra column and an extra row to the $R_1$ matrix.
+        let extra_col = q >= (t / 2);
+        let r = self.gen_even_r(extra_col);
+        let points = self.oa.points.map(|x| x.to_u32().unwrap()) * r;
+        Ok(SOA {
+            points,
+            strength: self.oa.strength.to_u32().unwrap(),
+            base: self.oa.levels.to_u32().unwrap(),
+        })
+    }
+}
+
+impl<'a, T: Integer> LiuLiu<'a, T> {
+    /// This creates the R matrix for the scenario where an even strength is being used to generate
+    /// the SOA. This is a helper method for the main generation method.
+    ///
+    /// `extra_col` refers to whether `q` is greater than or equal to `t / 2` (as stated by the
+    /// paper).
+    fn gen_even_r(&self, extra_col: bool) -> Array2<u32> {
+        let t = self.oa.strength.to_u32().unwrap();
+        let m = self.oa.factors.to_u32().unwrap();
         let s = self.oa.levels.to_u32().unwrap();
 
         // Calculate `k` and `q` based on `m = kt + q` knowing that `q` must be less than t. We can
@@ -27,19 +55,16 @@ impl<'a, T: Integer> SOAConstructor for LiuLiu<'a, T> {
         let k = m / t;
         let q = m % t;
 
-        // There are some special provisions for when q is >= t / 2. If this is true, we will have
-        // to add an extra column and an extra row to the $R_1$ matrix.
-        let extra_col = q < (t / 2);
-
         // Create the V_1 matrix as described in Liu & Liu, p. 1716.
         let v_1 = Array2::from(
-            (0..(t.to_u32().unwrap()))
+            (0..t)
                 .map(|i| {
-                    let i = i;
+                    let i = i.to_u32().unwrap();
                     [i, t - i - 1]
                 })
                 .collect::<Vec<[u32; 2]>>(),
         );
+
         // Liu, Liu describes r_1 as an m by 2k (or + 1) matrix based on q. Since everything is
         // already zeroed out except for the v_1 blocks, we don't have to worry about explicitly
         // setting the zero submatrices.
@@ -77,11 +102,11 @@ impl<'a, T: Integer> SOAConstructor for LiuLiu<'a, T> {
             }
             r_1.slice_mut(s![.., 2 * k.to_usize().unwrap()]).assign(&d);
         }
-        let points = self.oa.points.map(|x| x.to_u32().unwrap()) * r_1;
-        Ok(SOA {
-            points,
-            strength: self.oa.strength.to_u32().unwrap(),
-            base: self.oa.levels.to_u32().unwrap(),
-        })
+        r_1
     }
+}
+
+#[cfg(test)]
+mod test {
+    // TODO(afnan) add tests/sanity checks
 }
