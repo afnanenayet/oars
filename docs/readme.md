@@ -43,6 +43,10 @@ cargo build
 cargo build --release
 ```
 
+You can also run benchmarks using `cargo bench`. This uses criterion to run
+benchmarks, which offers robust statistics for benchmarks as well as pretty
+output for benchmark results.
+
 ### Usage
 
 You can use this library with your Rust project via cargo. It targets the
