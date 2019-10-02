@@ -120,7 +120,7 @@ impl OarsError {
     where
         T: Into<String>,
     {
-        OarsError {
+        Self {
             error_type: kind,
             desc: msg.into(),
         }
