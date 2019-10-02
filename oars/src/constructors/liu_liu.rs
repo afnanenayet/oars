@@ -17,6 +17,7 @@ pub struct LiuLiu<'a, T: Integer> {
 
 impl<'a, T: Integer> SOAConstructor for LiuLiu<'a, T> {
     fn gen(&self) -> SOAResult {
+        // TODO(afnan) we should probably pack these methods in a struct
         let t = self.oa.strength.to_u32().unwrap();
         let m = self.oa.factors.to_u32().unwrap();
 
@@ -28,7 +29,7 @@ impl<'a, T: Integer> SOAConstructor for LiuLiu<'a, T> {
         // There are some special provisions for when q is >= t / 2. If this is true, we will have
         // to add an extra column and an extra row to the $R_1$ matrix.
         let extra_col = q >= (t / 2);
-        let r = self.gen_even_r(extra_col);
+        let r = self.gen_even_helper(extra_col);
         let points = self.oa.points.map(|x| x.to_u32().unwrap()) * r;
         Ok(SOA {
             points,
@@ -44,7 +45,7 @@ impl<'a, T: Integer> LiuLiu<'a, T> {
     ///
     /// `extra_col` refers to whether `q` is greater than or equal to `t / 2` (as stated by the
     /// paper).
-    fn gen_even_r(&self, extra_col: bool) -> Array2<u32> {
+    fn gen_even_helper(&self, extra_col: bool) -> Array2<u32> {
         let t = self.oa.strength.to_u32().unwrap();
         let m = self.oa.factors.to_u32().unwrap();
         let s = self.oa.levels.to_u32().unwrap();
@@ -103,6 +104,11 @@ impl<'a, T: Integer> LiuLiu<'a, T> {
             r_1.slice_mut(s![.., 2 * k.to_usize().unwrap()]).assign(&d);
         }
         r_1
+    }
+
+    /// This method generates the R matrix for instances of orthogonal arrays with odd strengths.
+    fn gen_odd_helper(&self, extra_col: bool) -> Array2<u32> {
+        unimplemented!();
     }
 }
 
