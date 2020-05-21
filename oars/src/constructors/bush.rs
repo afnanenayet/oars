@@ -10,10 +10,11 @@ use std::cmp::min;
 use crate::oa::ParOAConstructor;
 
 #[cfg(feature = "parallel")]
-use ndarray::{stack, Axis};
+use ndarray::{stack, Axis, parallel::prelude::*};
+
 
 #[cfg(feature = "parallel")]
-use ndarray_parallel::prelude::*;
+use rayon::iter::IntoParallelIterator;
 
 impl<T: Integer> BushChecked<T> {
     /// Verify that the parameters for Bush construction are valid
