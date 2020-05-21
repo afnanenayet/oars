@@ -7,7 +7,7 @@
 
 ## Summary
 
-oa-rs/oars is a library for constructing orthogonal arrays (OAs) with various
+oars is a library for constructing orthogonal arrays (OAs) with various
 parameters, with the ability to construct OAs using multiple construction
 methods. It also provides utilities for constructing strong orthogonal arrays
 that work with the facilities for existing OAs or constructing SOAs from
@@ -64,6 +64,6 @@ dependency as such:
 
 ```toml
 [dependencies.oars]
-version = "1.1"
+version = "2.1"
 features = ["serialize", "parallel"] # optional features
 ```
