@@ -9,9 +9,6 @@ use primes::is_prime;
 use rayon::prelude::*;
 
 #[cfg(feature = "parallel")]
-use ndarray_parallel::prelude::*;
-
-#[cfg(feature = "parallel")]
 use crate::oa::ParOAConstructor;
 
 #[cfg(feature = "parallel")]
