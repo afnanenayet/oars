@@ -15,7 +15,7 @@ azure-devops = { project = "afnanenayet/oars", pipeline = "afnanenayet.oars" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-rand = "0.7"
+rand = "0.8"
 primes = "0.3"
 itertools = "0.9"
 num = "0.3"
