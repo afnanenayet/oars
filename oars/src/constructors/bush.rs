@@ -10,8 +10,7 @@ use std::cmp::min;
 use crate::oa::ParOAConstructor;
 
 #[cfg(feature = "parallel")]
-use ndarray::{stack, Axis, parallel::prelude::*};
-
+use ndarray::{parallel::prelude::*, stack, Axis};
 
 #[cfg(feature = "parallel")]
 use rayon::iter::IntoParallelIterator;
