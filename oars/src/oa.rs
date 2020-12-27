@@ -5,8 +5,8 @@
 //! and can be extended by users to define new OA construction methods.
 
 use crate::perm_vec::PermutationVector;
-use crate::utils::{ErrorKind, OarsError, OarsResult};
 use crate::utils::{Float, Integer};
+use crate::utils::{OarsError, OarsResult};
 use itertools::Itertools;
 use ndarray::Array2;
 use num::{pow, ToPrimitive};

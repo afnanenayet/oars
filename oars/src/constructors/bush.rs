@@ -1,5 +1,5 @@
 use crate::oa::{OAConstructor, OAResult, OA};
-use crate::utils::{poly_eval, to_base_fixed, ErrorKind, Integer, OarsError, OarsResult};
+use crate::utils::{poly_eval, to_base_fixed, Integer, OarsError, OarsResult};
 use ndarray::Array2;
 use num::pow::pow;
 use oars_proc_macro::Checked;
@@ -10,7 +10,7 @@ use std::cmp::min;
 use crate::oa::ParOAConstructor;
 
 #[cfg(feature = "parallel")]
-use ndarray::{parallel::prelude::*, stack, Axis};
+use ndarray::{concatenate, parallel::prelude::*, Axis};
 
 #[cfg(feature = "parallel")]
 use rayon::iter::IntoParallelIterator;
@@ -161,7 +161,7 @@ impl<T: Integer> ParOAConstructor<T> for Bush<T> {
                             col[[0 as usize; 0]] = T::from(row_idx - 1).unwrap() % self.prime_base;
                         })
                 });
-            let points = stack![Axis(1), initial_points, last_col];
+            let points = concatenate(Axis(1), &[initial_points.view(), last_col.view()])?;
 
             return Ok(OA {
                 strength: self.strength,

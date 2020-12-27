@@ -7,11 +7,7 @@
 use crate::utils::OarsError;
 use itertools::{zip, Itertools};
 use ndarray::Array2;
-use oars_proc_macro::Checked;
 use std::collections::{HashMap, HashSet};
-
-#[cfg(feature = "serialize")]
-use serde_derive::{Deserialize, Serialize};
 
 /// A result type for strong orthogonal array construction
 pub type SOAResult = Result<SOA, OarsError>;
