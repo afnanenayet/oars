@@ -41,17 +41,11 @@ impl<T: Integer> BoseChecked<T> {
         if self.dimensions < T::from(2).unwrap()
             || self.dimensions > self.prime_base + T::from(1).unwrap()
         {
-            return Err(OarsError::new(
-                ErrorKind::InvalidParams,
-                "Invalid dimensions",
-            ));
+            return Err(OarsError::InvalidParams("Invalid dimensions".into()));
         }
 
         if !is_prime(self.prime_base.to_u64().unwrap()) {
-            return Err(OarsError::new(
-                ErrorKind::InvalidParams,
-                "Base is not prime",
-            ));
+            return Err(OarsError::InvalidParams("Base is not prime".into()));
         }
         Ok(Bose {
             prime_base: self.prime_base,

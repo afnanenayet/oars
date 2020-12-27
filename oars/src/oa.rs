@@ -88,16 +88,14 @@ pub fn normalize<T: Integer, U: Float>(
     randomize: bool,
 ) -> OarsResult<Array2<U>> {
     if oa.points.ndim() != 2 {
-        return Err(OarsError::new(
-            ErrorKind::InvalidParams,
-            "The `points` array in `oa` must be two dimensional",
+        return Err(OarsError::InvalidParams(
+            "The `points` array in `oa` must be two dimensional".to_owned(),
         ));
     }
 
     if jitter.to_f64().unwrap() < 0.0 || jitter.to_f64().unwrap() > 1.0 {
-        return Err(OarsError::new(
-            ErrorKind::InvalidParams,
-            "`jitter` must be between 0 and 1",
+        return Err(OarsError::InvalidParams(
+            "`jitter` must be between 0 and 1".to_owned(),
         ));
     }
 
@@ -150,9 +148,8 @@ pub fn verify<T: Integer>(oa: &OA<T>) -> OarsResult<bool>
 where
 {
     if oa.points.ndim() != 2 {
-        return Err(OarsError::new(
-            ErrorKind::InvalidParams,
-            "`oa.points` must be two-dimensional",
+        return Err(OarsError::InvalidParams(
+            "`oa.points` must be two-dimensional".to_owned(),
         ));
     }
 
