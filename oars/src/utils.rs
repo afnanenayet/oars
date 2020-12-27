@@ -1,8 +1,6 @@
 //! Misc utilities and convenience functions for the library
 
 use num::{self, NumCast};
-use std::error::Error;
-use std::fmt;
 use std::vec::Vec;
 use thiserror::Error;
 
@@ -93,6 +91,12 @@ pub enum ErrorKind {
 pub enum OarsError {
     #[error("Invalid params supplied to the constructor: {0}")]
     InvalidParams(String),
+
+    #[error("There was an error pertaining to the shape of a matrix")]
+    ShapeError {
+        #[from]
+        source: ndarray::ShapeError,
+    },
 }
 
 /// A generic type for anything that can return an `OarsError`.

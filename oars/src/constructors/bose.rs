@@ -1,5 +1,5 @@
 use crate::oa::{OAConstructor, OAResult, OA};
-use crate::utils::{ErrorKind, Integer, OarsError, OarsResult};
+use crate::utils::{Integer, OarsError, OarsResult};
 use ndarray::Array2;
 use num::pow;
 use oars_proc_macro::Checked;
@@ -12,7 +12,7 @@ use rayon::prelude::*;
 use crate::oa::ParOAConstructor;
 
 #[cfg(feature = "parallel")]
-use ndarray::{stack, Axis};
+use ndarray::{concatenate, Axis};
 
 impl<T: Integer> BoseChecked<T> {
     /// Check the parameters for Bose construction
@@ -155,7 +155,7 @@ impl<T: Integer> ParOAConstructor<T> for Bose<T> {
                             % self.prime_base;
                     })
             });
-        let points = stack![Axis(1), initial_points, points];
+        let points: Array2<T> = concatenate(Axis(1), &[initial_points.view(), points.view()])?;
         Ok(OA {
             strength: T::from(2).unwrap(),
             levels: self.prime_base,

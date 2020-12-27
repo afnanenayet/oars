@@ -1,7 +1,6 @@
 //! Provides an interface for a permutation vector class that makes it easy to
 //! randomly shuffle orthogonal arrays, or shuffle any set.
 
-use rand;
 use rand::seq::SliceRandom;
 use std::ops::Index;
 
