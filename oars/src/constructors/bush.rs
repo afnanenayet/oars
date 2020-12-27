@@ -38,25 +38,20 @@ impl<T: Integer> BushChecked<T> {
     /// ```
     pub fn verify(self) -> OarsResult<Bush<T>> {
         if !is_prime(self.prime_base.to_u64().unwrap()) {
-            return Err(OarsError::new(
-                ErrorKind::InvalidParams,
-                "Base is not prime",
-            ));
+            return Err(OarsError::InvalidParams("Base is not prime".to_owned()));
         }
 
         if self.dimensions < T::from(2).unwrap()
             || self.dimensions > self.prime_base + T::from(1).unwrap()
         {
-            return Err(OarsError::new(
-                ErrorKind::InvalidParams,
-                "Dimensions must be less than `prime_base` + 1",
+            return Err(OarsError::InvalidParams(
+                "Dimensions must be less than `prime_base` + 1".to_owned(),
             ));
         }
 
         if self.strength < T::from(1).unwrap() || self.strength > self.prime_base {
-            return Err(OarsError::new(
-                ErrorKind::InvalidParams,
-                "`strength` must be between 1 and `prime_base` (inclusive)",
+            return Err(OarsError::InvalidParams(
+                "`strength` must be between 1 and `prime_base` (inclusive)".to_owned(),
             ));
         }
         Ok(Bush {

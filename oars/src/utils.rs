@@ -4,6 +4,7 @@ use num::{self, NumCast};
 use std::error::Error;
 use std::fmt;
 use std::vec::Vec;
+use thiserror::Error;
 
 /// A generic integer type.
 ///
@@ -88,44 +89,16 @@ pub enum ErrorKind {
 }
 
 /// An error indicating that there was some error constructing the orthogonal array.
-#[derive(Debug)]
-pub struct OarsError {
-    /// The general category of the error
-    error_type: ErrorKind,
-
-    /// A user-friendly description of the array which can supply additional information about
-    /// the error.
-    desc: String,
+#[derive(Debug, Error)]
+pub enum OarsError {
+    #[error("Invalid params supplied to the constructor: {0}")]
+    InvalidParams(String),
 }
 
 /// A generic type for anything that can return an `OarsError`.
 ///
 /// This type is meant for anything that isn't an orthogonal array constructor.
 pub type OarsResult<T> = Result<T, OarsError>;
-
-impl Error for OarsError {
-    fn description(&self) -> &str {
-        &self.desc
-    }
-}
-
-impl fmt::Display for OarsError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "OA Construction Error: {}", &self.desc)
-    }
-}
-
-impl OarsError {
-    pub fn new<T>(kind: ErrorKind, msg: T) -> Self
-    where
-        T: Into<String>,
-    {
-        Self {
-            error_type: kind,
-            desc: msg.into(),
-        }
-    }
-}
 
 #[cfg(test)]
 mod tests {
