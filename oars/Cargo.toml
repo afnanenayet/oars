@@ -17,7 +17,7 @@ maintenance = { status = "actively-developed" }
 [dependencies]
 rand = "0.8"
 primes = "0.3"
-itertools = "0.9"
+itertools = "0.10"
 num = "0.3"
 ndarray = "0.14.0"
 serde = { version = "1.0", optional = true }
