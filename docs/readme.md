@@ -1,6 +1,6 @@
 # oars
 
-[![Build Status](https://dev.azure.com/afnanenayet/oars/_apis/build/status/afnanenayet.oars?branchName=master)](https://dev.azure.com/afnanenayet/oars/_build/latest?definitionId=3&branchName=master)
+[![CI](https://github.com/afnanenayet/oars/actions/workflows/CI.yml/badge.svg)](https://github.com/afnanenayet/oars/actions/workflows/CI.yml)
 [![crates badge](https://meritbadge.herokuapp.com/oars)](https://crates.io/crates/oars)
 [![Documentation](https://docs.rs/oars/badge.svg)](https://docs.rs/oars)
 ![License](https://img.shields.io/crates/l/oars/0.3.1.svg)
