@@ -4,7 +4,7 @@ description = "A library providing construction methods and utility functions fo
 repository = "https://github.com/afnanenayet/oars.git"
 version = "3.0.2-alpha.0"
 authors = ["Afnan Enayet <afnan@afnan.io>"]
-edition = "2018"
+edition = "2021"
 readme = "../docs/readme.md"
 keywords = ["math", "orthogonal", "arrays", "monte", "carlo"]
 maintenance = { status = "actively-maintained" }
