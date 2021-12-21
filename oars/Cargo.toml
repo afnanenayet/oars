@@ -7,12 +7,7 @@ authors = ["Afnan Enayet <afnan@afnan.io>"]
 edition = "2021"
 readme = "../docs/readme.md"
 keywords = ["math", "orthogonal", "arrays", "monte", "carlo"]
-maintenance = { status = "actively-maintained" }
 license = "MIT"
-
-[badges]
-azure-devops = { project = "afnanenayet/oars", pipeline = "afnanenayet.oars" }
-maintenance = { status = "actively-developed" }
 
 [dependencies]
 rand = "0.8"
