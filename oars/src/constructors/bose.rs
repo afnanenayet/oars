@@ -130,7 +130,7 @@ impl<T: Integer> ParOAConstructor<T> for Bose<T> {
             .enumerate()
             .for_each(|(col_idx, mut col)| {
                 col.axis_iter_mut(Axis(0))
-                    .into_iter()
+                    .into_par_iter()
                     .enumerate()
                     .for_each(|(row_idx, mut row)| match col_idx {
                         0 => row[[row_idx; 0]] = T::from(row_idx).unwrap() / self.prime_base,
@@ -147,7 +147,7 @@ impl<T: Integer> ParOAConstructor<T> for Bose<T> {
             .enumerate()
             .for_each(|(col_idx, mut col)| {
                 col.axis_iter_mut(Axis(0))
-                    .into_iter()
+                    .into_par_iter()
                     .enumerate()
                     .for_each(|(row_idx, mut row)| {
                         row[[row_idx; 0]] = (initial_points[[row_idx, 0]]
