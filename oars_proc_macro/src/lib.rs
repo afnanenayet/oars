@@ -21,8 +21,8 @@ pub fn derive_checked_ctor(item: proc_macro::TokenStream) -> proc_macro::TokenSt
         let new_struct_name = format!("{}{}", new_struct.ident, "Checked");
         new_struct.ident = Ident::new(&new_struct_name, Span::call_site());
         let expanded = quote!(#new_struct);
-        return proc_macro::TokenStream::from(expanded);
+        proc_macro::TokenStream::from(expanded)
     } else {
-        panic!("Expected struct");
+        panic!("Expected struct")
     }
 }
