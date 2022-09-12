@@ -27,7 +27,7 @@ serialize = ["serde", "serde_derive", "ndarray/serde-1"]
 parallel = ["rayon", "ndarray/rayon"]
 
 [dev-dependencies]
-criterion = "0.3"
+criterion = "0.4"
 
 [[bench]]
 name = "bench_bose_construction"
