@@ -129,7 +129,7 @@ pub fn normalize<T: Integer, U: Float>(
             // Apply jitter factor (random number between 0 and jitter as an upper bound)
             // If jitter is 0, then the points will be centered in the strata.
             let jittered_point: U =
-                U::from(oa.points[[i, j]]).unwrap() + (jitter * U::from(rng.gen::<f64>()).unwrap());
+                U::from(oa.points[[i, j]]).unwrap() + (jitter * U::from(rng.r#gen::<f64>()).unwrap());
             point_set[[shuffled_i, j]] = jittered_point / U::from(oa.strength).unwrap();
         }
     }
@@ -197,7 +197,7 @@ where
 /// A generic trait to demarcate orthogonal array constructors
 pub trait OAConstructor<T: Integer> {
     /// Generate an orthogonal array
-    fn gen(&self) -> OAResult<T>;
+    fn r#gen(&self) -> OAResult<T>;
 }
 
 /// A generic trait that demarcates a parallelized orthogonal array constructor.

@@ -16,7 +16,7 @@ pub type SOAResult = Result<SOA, OarsError>;
 pub trait SOAConstructor {
     /// The method that generates an SOA. Any verification for the parameters must be handled by
     /// the constructor itself, and there are no generic interfaces for doing so.
-    fn gen(&self) -> SOAResult;
+    fn r#gen(&self) -> SOAResult;
 }
 
 /// A structure representing a strong orthogonal array, consisting of the array and associated

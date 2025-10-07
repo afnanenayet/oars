@@ -84,7 +84,7 @@ pub struct Bush<T: Integer> {
 }
 
 impl<T: Integer> OAConstructor<T> for Bush<T> {
-    fn gen(&self) -> OAResult<T> {
+    fn r#gen(&self) -> OAResult<T> {
         let n = pow(self.prime_base, self.strength.to_usize().unwrap());
         let mut points =
             Array2::<T>::zeros((n.to_usize().unwrap(), self.dimensions.to_usize().unwrap()));

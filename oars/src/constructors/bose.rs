@@ -79,7 +79,7 @@ pub struct Bose<T: Integer> {
 }
 
 impl<T: Integer> OAConstructor<T> for Bose<T> {
-    fn gen(&self) -> OAResult<T> {
+    fn r#gen(&self) -> OAResult<T> {
         let n = pow(self.prime_base, 2);
         let mut points =
             Array2::<T>::zeros((n.to_usize().unwrap(), self.dimensions.to_usize().unwrap()));
@@ -177,7 +177,7 @@ mod tests {
             prime_base: 2,
             dimensions: 2,
         };
-        let oa = bose.gen().unwrap();
+        let oa = bose.r#gen().unwrap();
         let ground_truth = arr2(&[[0, 0], [0, 1], [1, 0], [1, 1]]);
         assert!(oa.points == ground_truth);
     }
@@ -200,7 +200,7 @@ mod tests {
             prime_base: 3,
             dimensions: 3,
         };
-        let oa = bose.gen().unwrap();
+        let oa = bose.r#gen().unwrap();
         let ground_truth = arr2(&[
             [0, 0, 0],
             [0, 1, 1],
