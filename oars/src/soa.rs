@@ -5,9 +5,10 @@
 //! a verification method to ensure that the resulting points are stratified as an SOA should be.
 
 use crate::utils::OarsError;
-use itertools::{zip, Itertools};
+use itertools::Itertools;
 use ndarray::Array2;
 use std::collections::{HashMap, HashSet};
+use std::iter::zip;
 
 /// A result type for strong orthogonal array construction
 pub type SOAResult = Result<SOA, OarsError>;
