@@ -1,5 +1,5 @@
-use crate::oa::{OAConstructor, OAResult, OA};
-use crate::utils::{poly_eval, to_base_fixed, Integer, OarsError, OarsResult};
+use crate::oa::{OA, OAConstructor, OAResult};
+use crate::utils::{Integer, OarsError, OarsResult, poly_eval, to_base_fixed};
 use ndarray::Array2;
 use num::pow::pow;
 use oars_proc_macro::Checked;
@@ -10,7 +10,7 @@ use std::cmp::min;
 use crate::oa::ParOAConstructor;
 
 #[cfg(feature = "parallel")]
-use ndarray::{concatenate, parallel::prelude::*, Axis};
+use ndarray::{Axis, concatenate, parallel::prelude::*};
 
 #[cfg(feature = "parallel")]
 use rayon::iter::IntoParallelIterator;
@@ -94,7 +94,7 @@ impl<T: Integer> OAConstructor<T> for Bush<T> {
             let poly_dims = min(self.dimensions, self.prime_base);
 
             for j in 0..poly_dims.to_usize().unwrap() {
-                points[[i as usize, j as usize]] =
+                points[[i, j]] =
                     poly_eval(&coeffs, T::from(j).unwrap()) % self.prime_base;
             }
 
@@ -158,7 +158,7 @@ impl<T: Integer> ParOAConstructor<T> for Bush<T> {
                         .into_par_iter()
                         .enumerate()
                         .for_each(|(_, mut col)| {
-                            col[[0 as usize; 0]] = T::from(row_idx - 1).unwrap() % self.prime_base;
+                            col[[0_usize; 0]] = T::from(row_idx - 1).unwrap() % self.prime_base;
                         })
                 });
             let points = concatenate(Axis(1), &[initial_points.view(), last_col.view()])?;

@@ -1,6 +1,6 @@
 /// Unit tests for the Bose array constructor
 use oars::constructors::Bose;
-use oars::oa::{normalize, verify, OAConstructor};
+use oars::oa::{OAConstructor, normalize, verify};
 
 #[cfg(feature = "parallel")]
 use oars::oa::ParOAConstructor;

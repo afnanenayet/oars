@@ -9,7 +9,7 @@ use crate::utils::{Float, Integer};
 use crate::utils::{OarsError, OarsResult};
 use itertools::Itertools;
 use ndarray::Array2;
-use num::{pow, ToPrimitive};
+use num::{ToPrimitive, pow};
 use rand::prelude::*;
 use std::ops::Index;
 
@@ -128,8 +128,8 @@ pub fn normalize<T: Integer, U: Float>(
 
             // Apply jitter factor (random number between 0 and jitter as an upper bound)
             // If jitter is 0, then the points will be centered in the strata.
-            let jittered_point: U =
-                U::from(oa.points[[i, j]]).unwrap() + (jitter * U::from(rng.r#gen::<f64>()).unwrap());
+            let jittered_point: U = U::from(oa.points[[i, j]]).unwrap()
+                + (jitter * U::from(rng.r#gen::<f64>()).unwrap());
             point_set[[shuffled_i, j]] = jittered_point / U::from(oa.strength).unwrap();
         }
     }

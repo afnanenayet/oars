@@ -1,4 +1,4 @@
-use crate::oa::{OAConstructor, OAResult, OA};
+use crate::oa::{OA, OAConstructor, OAResult};
 use crate::utils::{Integer, OarsError, OarsResult};
 use ndarray::Array2;
 use num::pow;
@@ -12,7 +12,7 @@ use rayon::prelude::*;
 use crate::oa::ParOAConstructor;
 
 #[cfg(feature = "parallel")]
-use ndarray::{concatenate, Axis};
+use ndarray::{Axis, concatenate};
 
 impl<T: Integer> BoseChecked<T> {
     /// Check the parameters for Bose construction
@@ -86,14 +86,14 @@ impl<T: Integer> OAConstructor<T> for Bose<T> {
 
         // Initialize dims 1 and 2 with the special construction technique
         for i in 0..n.to_usize().unwrap() {
-            points[[i as usize, 0]] = T::from(i).unwrap() / self.prime_base;
-            points[[i as usize, 1]] = T::from(i).unwrap() % self.prime_base;
+            points[[i, 0]] = T::from(i).unwrap() / self.prime_base;
+            points[[i, 1]] = T::from(i).unwrap() % self.prime_base;
         }
 
         for i in 0..n.to_usize().unwrap() {
             for j in 2..self.dimensions.to_usize().unwrap() {
                 points[[i, j]] = (points[[i, 0]]
-                    + T::from(j - 1).unwrap() * points[[i as usize, 1]])
+                    + T::from(j - 1).unwrap() * points[[i, 1]])
                     % self.prime_base;
             }
         }

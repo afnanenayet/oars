@@ -116,7 +116,7 @@ pub fn verify(soa: &SOA) -> bool {
             let column_combos = (0..soa.points.shape()[1]).combinations(strata_perm.len());
 
             for col_combo in column_combos {
-                combo_counter = combo_counter.iter().map(|(k, _)| (k.clone(), 0)).collect();
+                combo_counter = combo_counter.keys().map(|k| (k.clone(), 0)).collect();
 
                 for row in soa.points.rows() {
                     let mut point = Vec::new();

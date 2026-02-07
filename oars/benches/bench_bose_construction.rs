@@ -9,7 +9,7 @@ fn bench_bose_small(c: &mut Criterion) {
         dimensions: 3,
     };
     c.bench_function("Bose (base 3, dim 3)", move |b| {
-        b.iter(|| bose.gen().unwrap())
+        b.iter(|| bose.r#gen().unwrap())
     });
 }
 
@@ -19,7 +19,7 @@ fn bench_bose_large(c: &mut Criterion) {
         dimensions: 50,
     };
     c.bench_function("Bose (base 53, dims 50)", move |b| {
-        b.iter(|| bose.gen().unwrap())
+        b.iter(|| bose.r#gen().unwrap())
     });
 }
 
@@ -49,7 +49,7 @@ fn bench_bose_xlarge(c: &mut Criterion) {
         dimensions: 250,
     };
     c.bench_function("Bose (base 251, dims 250)", move |b| {
-        b.iter(|| bose.gen().unwrap())
+        b.iter(|| bose.r#gen().unwrap())
     });
 }
 
