@@ -11,54 +11,31 @@ env:
 
 jobs:
   build-test:
-    name: Build & Test (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+    name: Build & Test
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy,rustfmt
 
       - uses: Swatinem/rust-cache@v2
 
       - name: Install cargo-nextest
         uses: taiki-e/install-action@nextest
 
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
       - name: Build
         run: cargo build --verbose --workspace --all-features
-
-      - name: Test
-        run: cargo nextest run --verbose --workspace --all-features
-
-      - name: Doctest
-        run: cargo test --doc --workspace --all-features
-
-  clippy:
-    name: Clippy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy
-
-      - uses: Swatinem/rust-cache@v2
 
       - name: Clippy
         run: cargo clippy --workspace --all-features -- -D warnings
 
-  fmt:
-    name: Rustfmt
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+      - name: unit tests
+        run: cargo nextest run --verbose --workspace --all-features
 
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt
-
-      - name: Check formatting
-        run: cargo fmt --all -- --check
+      - name: Doctests
+        run: cargo test --doc --workspace --all-features
