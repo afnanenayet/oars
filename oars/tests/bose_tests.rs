@@ -1,6 +1,6 @@
 /// Unit tests for the Bose array constructor
 use oars::constructors::Bose;
-use oars::oa::{normalize, verify, OAConstructor};
+use oars::oa::{OAConstructor, normalize, verify};
 
 #[cfg(feature = "parallel")]
 use oars::oa::ParOAConstructor;
@@ -11,21 +11,21 @@ fn test_bose_init_verify() {
         prime_base: 2,
         dimensions: 2,
     };
-    let oa = bose.gen().unwrap();
+    let oa = bose.r#gen().unwrap();
     assert!(verify(&oa).unwrap());
 
     let bose = Bose {
         prime_base: 3,
         dimensions: 2,
     };
-    let oa = bose.gen().unwrap();
+    let oa = bose.r#gen().unwrap();
     assert!(verify(&oa).unwrap());
 
     let bose = Bose {
         prime_base: 3,
         dimensions: 3,
     };
-    let oa = bose.gen().unwrap();
+    let oa = bose.r#gen().unwrap();
     assert!(verify(&oa).unwrap());
 }
 
@@ -60,7 +60,7 @@ fn test_bose_normalize() {
         prime_base: 2,
         dimensions: 2,
     };
-    let oa = bose.gen().unwrap();
+    let oa = bose.r#gen().unwrap();
     assert!(normalize(&oa, 0.0, true).is_ok());
     assert!(normalize(&oa, 1.0, true).is_ok());
 
@@ -68,7 +68,7 @@ fn test_bose_normalize() {
         prime_base: 3,
         dimensions: 2,
     };
-    let oa = bose.gen().unwrap();
+    let oa = bose.r#gen().unwrap();
     assert!(normalize(&oa, 0.0, true).is_ok());
     assert!(normalize(&oa, 1.0, true).is_ok());
 }

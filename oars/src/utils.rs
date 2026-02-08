@@ -51,7 +51,7 @@ where
     let mut new_num = num;
 
     for i in 0..degree.to_usize().unwrap() {
-        let i = i as usize;
+        let i = i;
         new_base[i] = new_num % base;
         new_num = new_num / base;
     }

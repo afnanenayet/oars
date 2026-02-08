@@ -3,6 +3,7 @@ members = [
     "oars",
     "oars_proc_macro"
 ]
+resolver = "3"
 
 [profile.bench]
 codegen-units = 1

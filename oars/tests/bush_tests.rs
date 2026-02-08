@@ -1,6 +1,6 @@
 /// Unit tests for the Bose array constructor
 use oars::constructors::Bush;
-use oars::oa::{normalize, verify, OAConstructor};
+use oars::oa::{OAConstructor, normalize, verify};
 
 #[cfg(feature = "parallel")]
 use oars::oa::ParOAConstructor;
@@ -12,7 +12,7 @@ fn test_bush_init_verify() {
         dimensions: 2,
         strength: 2,
     };
-    let oa = bush.gen().unwrap();
+    let oa = bush.r#gen().unwrap();
     assert!(verify(&oa).unwrap());
 
     let bush = Bush {
@@ -20,7 +20,7 @@ fn test_bush_init_verify() {
         dimensions: 2,
         strength: 2,
     };
-    let oa = bush.gen().unwrap();
+    let oa = bush.r#gen().unwrap();
     assert!(verify(&oa).unwrap());
 
     let bush = Bush {
@@ -28,7 +28,7 @@ fn test_bush_init_verify() {
         dimensions: 3,
         strength: 3,
     };
-    let oa = bush.gen().unwrap();
+    let oa = bush.r#gen().unwrap();
     assert!(verify(&oa).unwrap());
 
     let bush = Bush {
@@ -36,7 +36,7 @@ fn test_bush_init_verify() {
         dimensions: 4,
         strength: 4,
     };
-    let oa = bush.gen().unwrap();
+    let oa = bush.r#gen().unwrap();
     assert!(verify(&oa).unwrap());
 }
 
@@ -83,7 +83,7 @@ fn test_bush_normalize() {
         dimensions: 2,
         strength: 2,
     };
-    let oa = bush.gen().unwrap();
+    let oa = bush.r#gen().unwrap();
     assert!(normalize(&oa, 0.0, true).is_ok());
     assert!(normalize(&oa, 1.0, true).is_ok());
 
@@ -92,7 +92,7 @@ fn test_bush_normalize() {
         dimensions: 2,
         strength: 2,
     };
-    let oa = bush.gen().unwrap();
+    let oa = bush.r#gen().unwrap();
     assert!(normalize(&oa, 0.0, true).is_ok());
     assert!(normalize(&oa, 1.0, true).is_ok());
 }

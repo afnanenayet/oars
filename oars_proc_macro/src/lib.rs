@@ -3,7 +3,7 @@
 extern crate proc_macro;
 use proc_macro2::{Ident, Span};
 use quote::quote;
-use syn::{parse_macro_input, Data, DeriveInput};
+use syn::{Data, DeriveInput, parse_macro_input};
 
 /// Create a copy of the struct suffixed by "Checked"
 ///

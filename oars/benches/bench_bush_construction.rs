@@ -13,7 +13,7 @@ fn bench_bush_small(c: &mut Criterion) {
         strength: 3,
     };
     c.bench_function("Bush (base 3, dim 3, strength 3)", move |b| {
-        b.iter(|| bush.gen().unwrap())
+        b.iter(|| bush.r#gen().unwrap())
     });
 }
 
@@ -24,7 +24,7 @@ fn bench_bush_large(c: &mut Criterion) {
         strength: 5,
     };
     c.bench_function("Bush (base 11, dim 5, strength 5)", move |b| {
-        b.iter(|| bush.gen().unwrap())
+        b.iter(|| bush.r#gen().unwrap())
     });
 }
 

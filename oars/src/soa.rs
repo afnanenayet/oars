@@ -5,9 +5,10 @@
 //! a verification method to ensure that the resulting points are stratified as an SOA should be.
 
 use crate::utils::OarsError;
-use itertools::{zip, Itertools};
+use itertools::Itertools;
 use ndarray::Array2;
 use std::collections::{HashMap, HashSet};
+use std::iter::zip;
 
 /// A result type for strong orthogonal array construction
 pub type SOAResult = Result<SOA, OarsError>;
@@ -16,7 +17,7 @@ pub type SOAResult = Result<SOA, OarsError>;
 pub trait SOAConstructor {
     /// The method that generates an SOA. Any verification for the parameters must be handled by
     /// the constructor itself, and there are no generic interfaces for doing so.
-    fn gen(&self) -> SOAResult;
+    fn r#gen(&self) -> SOAResult;
 }
 
 /// A structure representing a strong orthogonal array, consisting of the array and associated
@@ -115,7 +116,7 @@ pub fn verify(soa: &SOA) -> bool {
             let column_combos = (0..soa.points.shape()[1]).combinations(strata_perm.len());
 
             for col_combo in column_combos {
-                combo_counter = combo_counter.iter().map(|(k, _)| (k.clone(), 0)).collect();
+                combo_counter = combo_counter.keys().map(|k| (k.clone(), 0)).collect();
 
                 for row in soa.points.rows() {
                     let mut point = Vec::new();

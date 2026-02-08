@@ -1,4 +1,4 @@
-use crate::oa::{OAConstructor, OAResult, OA};
+use crate::oa::{OA, OAConstructor, OAResult};
 use crate::utils::{Integer, OarsError, OarsResult};
 use ndarray::Array2;
 use num::pow;
@@ -12,7 +12,7 @@ use rayon::prelude::*;
 use crate::oa::ParOAConstructor;
 
 #[cfg(feature = "parallel")]
-use ndarray::{concatenate, Axis};
+use ndarray::{Axis, concatenate};
 
 impl<T: Integer> BoseChecked<T> {
     /// Check the parameters for Bose construction
@@ -79,21 +79,21 @@ pub struct Bose<T: Integer> {
 }
 
 impl<T: Integer> OAConstructor<T> for Bose<T> {
-    fn gen(&self) -> OAResult<T> {
+    fn r#gen(&self) -> OAResult<T> {
         let n = pow(self.prime_base, 2);
         let mut points =
             Array2::<T>::zeros((n.to_usize().unwrap(), self.dimensions.to_usize().unwrap()));
 
         // Initialize dims 1 and 2 with the special construction technique
         for i in 0..n.to_usize().unwrap() {
-            points[[i as usize, 0]] = T::from(i).unwrap() / self.prime_base;
-            points[[i as usize, 1]] = T::from(i).unwrap() % self.prime_base;
+            points[[i, 0]] = T::from(i).unwrap() / self.prime_base;
+            points[[i, 1]] = T::from(i).unwrap() % self.prime_base;
         }
 
         for i in 0..n.to_usize().unwrap() {
             for j in 2..self.dimensions.to_usize().unwrap() {
                 points[[i, j]] = (points[[i, 0]]
-                    + T::from(j - 1).unwrap() * points[[i as usize, 1]])
+                    + T::from(j - 1).unwrap() * points[[i, 1]])
                     % self.prime_base;
             }
         }
@@ -177,7 +177,7 @@ mod tests {
             prime_base: 2,
             dimensions: 2,
         };
-        let oa = bose.gen().unwrap();
+        let oa = bose.r#gen().unwrap();
         let ground_truth = arr2(&[[0, 0], [0, 1], [1, 0], [1, 1]]);
         assert!(oa.points == ground_truth);
     }
@@ -200,7 +200,7 @@ mod tests {
             prime_base: 3,
             dimensions: 3,
         };
-        let oa = bose.gen().unwrap();
+        let oa = bose.r#gen().unwrap();
         let ground_truth = arr2(&[
             [0, 0, 0],
             [0, 1, 1],
