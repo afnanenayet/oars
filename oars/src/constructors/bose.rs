@@ -92,9 +92,8 @@ impl<T: Integer> OAConstructor<T> for Bose<T> {
 
         for i in 0..n.to_usize().unwrap() {
             for j in 2..self.dimensions.to_usize().unwrap() {
-                points[[i, j]] = (points[[i, 0]]
-                    + T::from(j - 1).unwrap() * points[[i, 1]])
-                    % self.prime_base;
+                points[[i, j]] =
+                    (points[[i, 0]] + T::from(j - 1).unwrap() * points[[i, 1]]) % self.prime_base;
             }
         }
 

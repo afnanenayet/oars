@@ -94,8 +94,7 @@ impl<T: Integer> OAConstructor<T> for Bush<T> {
             let poly_dims = min(self.dimensions, self.prime_base);
 
             for j in 0..poly_dims.to_usize().unwrap() {
-                points[[i, j]] =
-                    poly_eval(&coeffs, T::from(j).unwrap()) % self.prime_base;
+                points[[i, j]] = poly_eval(&coeffs, T::from(j).unwrap()) % self.prime_base;
             }
 
             if self.dimensions == self.prime_base + T::from(1).unwrap() {
