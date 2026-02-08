@@ -50,9 +50,8 @@ where
     let mut new_base = vec![T::from(0).unwrap(); degree.to_usize().unwrap()];
     let mut new_num = num;
 
-    for i in 0..degree.to_usize().unwrap() {
-        let i = i;
-        new_base[i] = new_num % base;
+    for elem in new_base.iter_mut().take(degree.to_usize().unwrap_or(0)) {
+        *elem = new_num % base;
         new_num = new_num / base;
     }
     new_base
