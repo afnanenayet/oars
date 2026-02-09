@@ -33,7 +33,7 @@ impl<T: Integer> BoseChecked<T> {
     ///
     /// // On success, the BoseChecked struct is consumed and replaced with a Bose struct that is
     /// // ready to generate an OA
-    /// let oa = bose.verify()?.gen();
+    /// let oa = bose.verify()?.r#gen();
     /// # Ok(())
     /// # }
     /// ```

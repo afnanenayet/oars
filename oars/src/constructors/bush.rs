@@ -32,7 +32,7 @@ impl<T: Integer> BushChecked<T> {
     ///     dimensions: 3,
     ///     strength: 3,
     /// };
-    /// let oa = bush.verify()?.gen();
+    /// let oa = bush.verify()?.r#gen();
     /// # Ok(())
     /// # }
     /// ```
