@@ -33,7 +33,7 @@ impl<T: Integer> BoseChecked<T> {
     ///
     /// // On success, the BoseChecked struct is consumed and replaced with a Bose struct that is
     /// // ready to generate an OA
-    /// let oa = bose.verify()?.gen();
+    /// let oa = bose.verify()?.r#gen();
     /// # Ok(())
     /// # }
     /// ```
@@ -92,9 +92,8 @@ impl<T: Integer> OAConstructor<T> for Bose<T> {
 
         for i in 0..n.to_usize().unwrap() {
             for j in 2..self.dimensions.to_usize().unwrap() {
-                points[[i, j]] = (points[[i, 0]]
-                    + T::from(j - 1).unwrap() * points[[i, 1]])
-                    % self.prime_base;
+                points[[i, j]] =
+                    (points[[i, 0]] + T::from(j - 1).unwrap() * points[[i, 1]]) % self.prime_base;
             }
         }
 

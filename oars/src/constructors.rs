@@ -33,7 +33,7 @@
 //!     dimensions: 2,
 //! };
 //!
-//! let oa = b.verify()?.gen();
+//! let oa = b.verify()?.r#gen();
 //! # Ok(())
 //! # }
 //! ```

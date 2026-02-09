@@ -39,7 +39,7 @@
 //! };
 //!
 //! // Use the OAConstructor method to generate the orthogonal array
-//! let oa = bose.verify()?.gen()?;
+//! let oa = bose.verify()?.r#gen()?;
 //!
 //! // Verify that the orthogonal array is correct according to its parameters
 //! assert!(verify(&oa)?);

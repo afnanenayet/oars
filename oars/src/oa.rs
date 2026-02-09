@@ -120,6 +120,7 @@ pub fn normalize<T: Integer, U: Float>(
     // note: `genrows()` does not seem to implement `enumerate()` so we need the explicit loop
     // counter.
     //for row in oa.points.genrows() {
+    #[allow(clippy::needless_range_loop)]
     for i in 0..dims[0] {
         for j in 0..dims[1] {
             // Apply the shuffle with the permutation vector to get the new index for the
